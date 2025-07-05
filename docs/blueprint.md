@@ -1,0 +1,71 @@
+# **App Name**: Francisco Edibles
+
+## Core Features:
+
+- Dynamic Menu Display: Display a dynamic menu of food items, fetched from Firebase.
+- Menu Browsing and Filtering: Allow users to browse, search, and filter the menu to find desired food items.
+- Shopping Cart: Implement a shopping cart functionality to enable users to add, remove, and adjust quantities of food items.
+- Payment Processing: Integrate with Paystack to process payments for orders via card, USSD, or bank transfer.
+- AI Menu Display: Display the current menu items in an engaging, mouth-watering, arrangement to entice customer purchase.
+- Welcome Notification: Send welcome message to users through their mobile number or email upon account creation.
+- Order Confirmation Notification: Send order confirmation notifications to users via mobile number or email after placing an order.
+- Promotional Notifications: Notify users of ongoing promotions and special offers through mobile number or email.
+- Delivery/Pickup Options: Offer users the choice between delivery and pickup options during checkout.
+- Admin-Configurable Delivery Fees: Enable administrators to set delivery fees.
+- Email/Password Authentication: Implement email and password sign-up/login functionality.
+- Google Login: Allow users to optionally log in using their Google account.
+- Password Reset: Enable users to reset their passwords.
+- Session Persistence: Maintain user sessions to keep users logged in.
+- Dynamic Menu from Firebase: Fetch dynamic menu data (categories, items, images, descriptions, prices, availability) from Firebase.
+- Food Item Details: Include image, description, and price for each food item.
+- Real-time Availability: Indicate real-time availability of food items (admin can mark as 'sold out').
+- Search and Filter: Implement a search bar and category filter for menu browsing.
+- Quantity Selector: Provide quantity selector (+/-) for ordering.
+- Add to Cart: Implement 'Add to Cart' functionality with cart counter.
+- Cart Management: Allow users to view, edit, and remove items from their cart.
+- Cart Summary: Display a summary of the total cost in the cart.
+- Delivery Information: Enable users to add delivery address and phone number during checkout.
+- Paystack Checkout: Offer checkout with Paystack (card, USSD, bank transfer, Paystack wallet).
+- Order History: Allow users to view their order history.
+- Order Tracking: Track order status (Processing → Cooking → Out for Delivery → Delivered).
+- Feedback/Review: Enable users to leave reviews and star ratings for food items.
+- Issue Reporting: Allow users to optionally report issues with their order.
+- Profile Management: Enable users to view and update their profile (name, email, phone, address).
+- Change Password: Allow users to change their password.
+- View Past Orders: Allow users to view their past orders.
+- Admin Login: Implement pre-made admin email/password or Google login for admin access.
+- Role-Based Access: Implement role-based access control (user vs admin).
+- Order Management Dashboard: Provide a dashboard to view all incoming orders.
+- Change Order Status: Allow admins to change the status of orders.
+- View Customer Info: Allow admins to view customer information.
+- Mark Orders as Completed: Allow admins to mark orders as completed.
+- Order Filtering: Allow admins to filter orders by date, status, or user.
+- Add Food Items: Allow admins to add new food items (name, price, image, description).
+- Edit Food Details: Allow admins to edit/update food details.
+- Mark as Sold Out: Allow admins to mark items as 'Sold Out'.
+- Remove Food Items: Allow admins to remove/delete food items.
+- Order Analytics: Provide analytics on number of orders (daily/weekly/monthly).
+- Revenue Stats: Provide revenue statistics.
+- Top-Selling Items: Identify top-selling items.
+- Active Users: Track active users.
+- Announcements: Allow admins to push daily specials, promo messages, or announcements to the homepage.
+- Security: Implement Firebase Authentication and Firestore Rules for secure data access.
+- Data Storage: Use Firebase Firestore or Realtime Database for storing orders, users, and menu data.
+- Image Storage: Use Firebase Storage for food images.
+- Hosting: Use Firebase Hosting or alternative (Vercel/Netlify).
+- Paystack Webhook Integration: Integrate Paystack Webhook to confirm successful payments.
+- Responsive Design: Ensure mobile responsive design (usable on both mobile & PC).
+- PWA Option: Offer a Progressive Web App (PWA) option for an installable web app.
+- Paystack Integration: Integrate Paystack inline or popup payment.
+- Payment Verification: Get reference and verify payment with webhook.
+- Order Confirmation: Confirm success before saving order to database.
+- Receipt Storage: Option to save receipt details to Firebase.
+
+## Style Guidelines:
+
+- A warm, inviting reddish-brown (#A0522D), suggestive of spices and cooked meats.
+- A desaturated, light tan color (#F5DEB3) will give a welcoming impression and let the darker items stand out.
+- Use a muted orange (#D2691E) as an accent to provide some 'pop' without being distracting.
+- 'Playfair' (serif) for headlines and 'PT Sans' (sans-serif) for body text, for an elegant yet readable feel.
+- Use clean, modern icons to represent menu categories and UI actions.
+- Employ a mobile-first, responsive design to ensure usability on all devices.
