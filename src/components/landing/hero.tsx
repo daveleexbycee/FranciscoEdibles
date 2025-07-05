@@ -1,41 +1,34 @@
-import { enticeCustomerPurchase } from '@/ai/flows/entice-customer-purchase';
-import { menuItems } from '@/lib/mock-data';
 import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import { ArrowRight } from 'lucide-react';
 import Link from 'next/link';
 import {
-  Card,
-  CardContent,
-} from "@/components/ui/card"
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselNext,
+  CarouselPrevious,
+} from "@/components/ui/carousel";
 
-export default async function Hero() {
-  const featuredItemsForAI = menuItems.slice(0, 3);
-  let aiData;
-  try {
-    aiData = await enticeCustomerPurchase({ menuItems: featuredItemsForAI });
-  } catch (error) {
-    console.error("AI flow failed, using fallback data.", error);
-    aiData = {
-      arrangementDescription: "A delicious spread of our finest dishes, perfectly arranged to tempt your taste buds. From savory mains to delightful sides, there's something for everyone.",
-      imagePrompt: "delicious food",
-    };
-  }
+const carouselImages = [
+  { src: 'https://placehold.co/650x550.png', alt: 'Jollof Rice with chicken', hint: 'jollof rice' },
+  { src: 'https://placehold.co/650x550.png', alt: 'Grilled Suya skewers', hint: 'suya skewers' },
+  { src: 'https://placehold.co/650x550.png', alt: 'Egusi soup with fufu', hint: 'egusi soup' },
+  { src: 'https://placehold.co/650x550.png', alt: 'Fried plantains', hint: 'fried plantains' },
+];
 
-  // Extract keywords for the data-ai-hint
-  const hintKeywords = aiData.imagePrompt.split(' ').slice(0, 2).join(' ');
-
+export default function Hero() {
   return (
-    <section className="w-full py-12 md:py-24 lg:py-32 bg-secondary/30">
+    <section className="w-full py-16 sm:py-24 md:py-32 bg-secondary/30">
       <div className="container px-4 md:px-6">
-        <div className="grid gap-6 lg:grid-cols-[1fr_550px] lg:gap-12 xl:grid-cols-[1fr_650px]">
+        <div className="grid gap-8 lg:grid-cols-2 lg:gap-12">
           <div className="flex flex-col justify-center space-y-4">
             <div className="space-y-4">
               <h1 className="font-headline text-4xl font-bold tracking-tighter text-primary sm:text-5xl xl:text-6xl/none">
                 A Symphony of Authentic Flavors
               </h1>
               <p className="max-w-[600px] text-muted-foreground md:text-xl">
-                {aiData.arrangementDescription}
+                Experience the vibrant flavors of Nigeria, delivered right to your door. We bring authentic dishes to life with every meal.
               </p>
             </div>
             <div className="flex flex-col gap-2 min-[400px]:flex-row">
@@ -52,19 +45,25 @@ export default async function Hero() {
               </Button>
             </div>
           </div>
-          <Card className="overflow-hidden">
-            <CardContent className="p-0">
-               <Image
-                src="https://placehold.co/650x550.png"
-                alt="A delicious spread of food from Francisco Edibles"
-                width={650}
-                height={550}
-                className="mx-auto aspect-video overflow-hidden rounded-xl object-cover sm:w-full lg:aspect-square"
-                data-ai-hint={hintKeywords}
-                priority
-              />
-            </CardContent>
-          </Card>
+          <Carousel className="w-full rounded-xl overflow-hidden" opts={{ loop: true }}>
+            <CarouselContent>
+              {carouselImages.map((image, index) => (
+                <CarouselItem key={index}>
+                  <Image
+                    src={image.src}
+                    alt={image.alt}
+                    width={650}
+                    height={550}
+                    className="w-full aspect-video object-cover lg:aspect-square"
+                    data-ai-hint={image.hint}
+                    priority={index === 0}
+                  />
+                </CarouselItem>
+              ))}
+            </CarouselContent>
+            <CarouselPrevious className="absolute left-4 hidden sm:flex" />
+            <CarouselNext className="absolute right-4 hidden sm:flex" />
+          </Carousel>
         </div>
       </div>
     </section>

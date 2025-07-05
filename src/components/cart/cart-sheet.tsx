@@ -45,7 +45,7 @@ export function CartSheet({ open, onOpenChange }: CartSheetProps) {
             <SheetFooter className="flex-col gap-4 p-6 bg-secondary/50">
               <div className="flex justify-between font-semibold text-lg">
                 <span>Subtotal</span>
-                <span>${subtotal.toFixed(2)}</span>
+                <span>₦{subtotal.toFixed(2)}</span>
               </div>
               <Separator />
                <div className="flex justify-between items-center">

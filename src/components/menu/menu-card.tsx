@@ -35,7 +35,7 @@ export default function MenuCard({ item }: MenuCardProps) {
         <CardDescription className="text-sm text-muted-foreground">{item.description}</CardDescription>
       </CardContent>
       <CardFooter className="p-4 flex justify-between items-center">
-        <p className="font-bold text-lg text-primary">${item.price.toFixed(2)}</p>
+        <p className="font-bold text-lg text-primary">₦{item.price.toFixed(2)}</p>
         <Button onClick={() => addToCart(item)} disabled={item.soldOut}>
            <ShoppingCart className="mr-2 h-4 w-4"/>
            Add to Cart
