@@ -31,7 +31,9 @@ export default function Header() {
           </Link>
         </nav>
         <div className="flex items-center gap-2 md:gap-4">
-          <ThemeToggle />
+          <div className="hidden md:block">
+            <ThemeToggle />
+          </div>
           <CartIcon />
           <Button className="hidden sm:inline-flex" asChild>
             <Link href="/login">Sign In</Link>
@@ -44,24 +46,33 @@ export default function Header() {
                   <span className="sr-only">Toggle Menu</span>
                 </Button>
               </SheetTrigger>
-              <SheetContent side="right">
-                <div className="mt-8 flex flex-col gap-6">
-                  <Link href="/" className="flex items-center gap-2">
+              <SheetContent side="right" className="flex flex-col">
+                <div className="mt-8">
+                  <Link href="/" className="mb-8 flex items-center gap-2">
                     <Flame className="h-7 w-7 text-primary" />
                     <span className="font-headline text-xl font-bold tracking-wide">Francisco Edibles</span>
                   </Link>
-                  <Link href="/menu" className="text-lg font-medium">
-                    Menu
-                  </Link>
-                  <Link href="/#about" className="text-lg font-medium">
-                    About
-                  </Link>
-                  <Link href="/#contact" className="text-lg font-medium">
-                    Contact
-                  </Link>
+                  <div className="flex flex-col gap-6">
+                    <Link href="/menu" className="text-lg font-medium">
+                      Menu
+                    </Link>
+                    <Link href="/#about" className="text-lg font-medium">
+                      About
+                    </Link>
+                    <Link href="/#contact" className="text-lg font-medium">
+                      Contact
+                    </Link>
+                  </div>
+                </div>
+
+                <div className="mt-auto flex flex-col gap-4 border-t pt-6">
                   <Button asChild>
                     <Link href="/login">Sign In</Link>
                   </Button>
+                  <div className="flex items-center justify-between rounded-md border p-2">
+                    <span className="text-sm font-medium">Switch Theme</span>
+                    <ThemeToggle />
+                  </div>
                 </div>
               </SheetContent>
             </Sheet>
