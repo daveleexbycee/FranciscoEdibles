@@ -10,7 +10,7 @@ export default function Footer() {
 
   const pageLinks = [
     { name: "Menu", href: "/menu" },
-    { name: "About Us", href: "#" },
+    { name: "About Us", href: "/about" },
     { name: "Contact", href: "#" },
     { name: "Privacy Policy", href: "#" },
   ];

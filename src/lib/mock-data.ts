@@ -8,6 +8,21 @@ export type MenuItem = {
   soldOut: boolean;
 };
 
+export type Chef = {
+  id: string;
+  name: string;
+  title: 'Head Chef' | 'Sous Chef' | 'Pastry Chef' | 'Chef de Partie';
+  bio: string;
+  imageUrl: string;
+};
+
+export type Award = {
+  id: string;
+  title: string;
+  year: number;
+  issuer: string;
+}
+
 export const menuItems: MenuItem[] = [
   {
     id: '1',
@@ -66,3 +81,33 @@ export const menuItems: MenuItem[] = [
 ];
 
 export const categories: string[] = ['All', 'Main Dishes', 'Sides', 'Drinks', 'Desserts'];
+
+export const chefs: Chef[] = [
+  {
+    id: 'chef-1',
+    name: 'Tunde Wey',
+    title: 'Head Chef',
+    bio: 'With over 20 years of experience in Nigerian and international cuisine, Chef Tunde is the creative force behind our menu.',
+    imageUrl: 'https://placehold.co/400x500.png',
+  },
+  {
+    id: 'chef-2',
+    name: 'Adebisi Adeyemi',
+    title: 'Sous Chef',
+    bio: 'Adebisi brings a modern twist to traditional dishes, specializing in fusion flavors and artistic presentation.',
+    imageUrl: 'https://placehold.co/400x500.png',
+  },
+  {
+    id: 'chef-3',
+    name: 'Chidinma Okoro',
+    title: 'Pastry Chef',
+    bio: 'Our queen of desserts, Chidinma crafts delightful sweets that are the perfect end to any meal.',
+    imageUrl: 'https://placehold.co/400x500.png',
+  },
+];
+
+export const awards: Award[] = [
+  { id: 'award-1', title: 'Best Nigerian Restaurant', year: 2023, issuer: 'Lagos Food Critic Awards' },
+  { id: 'award-2', title: 'Award of Excellence', year: 2022, issuer: 'Culinary Federation of Nigeria' },
+  { id: 'award-3', title: 'Top Jollof Rice', year: 2021, issuer: 'West African Food Festival' },
+];

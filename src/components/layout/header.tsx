@@ -23,7 +23,7 @@ export default function Header() {
           <Link href="/menu" className="text-sm font-medium text-muted-foreground transition-colors hover:text-primary">
             Menu
           </Link>
-          <Link href="/#about" className="text-sm font-medium text-muted-foreground transition-colors hover:text-primary">
+          <Link href="/about" className="text-sm font-medium text-muted-foreground transition-colors hover:text-primary">
             About
           </Link>
           <Link href="/#contact" className="text-sm font-medium text-muted-foreground transition-colors hover:text-primary">
@@ -56,7 +56,7 @@ export default function Header() {
                     <Link href="/menu" className="text-lg font-medium">
                       Menu
                     </Link>
-                    <Link href="/#about" className="text-lg font-medium">
+                    <Link href="/about" className="text-lg font-medium">
                       About
                     </Link>
                     <Link href="/#contact" className="text-lg font-medium">
