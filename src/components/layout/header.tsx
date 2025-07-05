@@ -9,6 +9,7 @@ import {
   SheetContent,
   SheetTrigger,
 } from "@/components/ui/sheet"
+import { ThemeToggle } from './theme-toggle';
 
 export default function Header() {
   return (
@@ -16,7 +17,7 @@ export default function Header() {
       <div className="container flex h-16 max-w-screen-2xl items-center justify-between">
         <Link href="/" className="flex items-center gap-2">
           <Flame className="h-7 w-7 text-primary" />
-          <span className="font-headline text-xl font-bold tracking-wide">Francisco Edibles</span>
+          <span className="hidden md:inline font-headline text-xl font-bold tracking-wide">Francisco Edibles</span>
         </Link>
         <nav className="hidden md:flex gap-6 items-center">
           <Link href="/menu" className="text-sm font-medium text-muted-foreground transition-colors hover:text-primary">
@@ -30,6 +31,7 @@ export default function Header() {
           </Link>
         </nav>
         <div className="flex items-center gap-2 md:gap-4">
+          <ThemeToggle />
           <CartIcon />
           <Button className="hidden sm:inline-flex" asChild>
             <Link href="/login">Sign In</Link>
