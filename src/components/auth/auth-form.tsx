@@ -28,8 +28,10 @@ import {
   signInWithEmailAndPassword,
   updateProfile,
   GoogleAuthProvider,
-  signInWithPopup
+  signInWithPopup,
+  getAdditionalUserInfo
 } from "firebase/auth"
+import { sendWelcomeEmail } from "@/ai/flows/send-welcome-email"
 
 const GoogleIcon = () => (
   <svg className="mr-2 h-4 w-4" aria-hidden="true" focusable="false" data-prefix="fab" data-icon="google" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 488 512"><path fill="currentColor" d="M488 261.8C488 403.3 381.5 512 244 512 111.8 512 0 400.2 0 261.8S111.8 11.6 244 11.6c67.8 0 125.2 28.2 166.7 73.1l-66.2 64.9c-20-18.4-47.9-30.8-79.5-30.8-62.3 0-113.8 52.3-113.8 116.8s51.5 116.8 113.8 116.8c70.4 0 98.7-52.9 103.5-79.2H244v-64.8h242.1c2.9 15.6 4.9 31.9 4.9 48.9z"></path></svg>
@@ -88,6 +90,14 @@ export default function AuthForm() {
         displayName: signUpName,
       });
 
+      if (user.email) {
+        try {
+          await sendWelcomeEmail({ name: signUpName, email: user.email });
+        } catch (emailError) {
+          console.error("Failed to send welcome email:", emailError);
+        }
+      }
+
       toast({
         title: "Account Created!",
         description: "Welcome to Francisco Edibles!",
@@ -110,6 +120,16 @@ export default function AuthForm() {
     try {
       const result = await signInWithPopup(auth, provider);
       const user = result.user;
+
+      const additionalUserInfo = getAdditionalUserInfo(result);
+      if (additionalUserInfo?.isNewUser && user.email) {
+        try {
+          await sendWelcomeEmail({ name: user.displayName || "there", email: user.email });
+        } catch (emailError) {
+          console.error("Failed to send welcome email for Google sign-up:", emailError);
+        }
+      }
+
       toast({
         title: "Login Successful",
         description: `Welcome, ${user.displayName || user.email}!`,
