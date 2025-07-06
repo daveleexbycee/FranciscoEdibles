@@ -8,6 +8,7 @@ import {
   Sheet,
   SheetContent,
   SheetTrigger,
+  SheetTitle,
 } from "@/components/ui/sheet"
 import { ThemeToggle } from './theme-toggle';
 
@@ -47,6 +48,7 @@ export default function Header() {
                 </Button>
               </SheetTrigger>
               <SheetContent side="right" className="flex flex-col">
+                <SheetTitle className="sr-only">Mobile Menu</SheetTitle>
                 <div className="mt-8">
                   <Link href="/" className="mb-8 flex items-center gap-2">
                     <Flame className="h-7 w-7 text-primary" />
