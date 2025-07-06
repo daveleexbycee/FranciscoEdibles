@@ -1,3 +1,4 @@
+
 "use client"
 
 import {
@@ -11,7 +12,7 @@ import {
   SidebarInset,
   SidebarTrigger,
 } from "@/components/ui/sidebar"
-import { Home, Users, Utensils, ShoppingBag, Settings, Flame } from "lucide-react"
+import { Home, Users, Utensils, ShoppingBag, Settings, Flame, Ticket } from "lucide-react"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 
@@ -25,6 +26,7 @@ export default function AdminLayout({
   const menuItems = [
     { href: "/admin", label: "Dashboard", icon: Home },
     { href: "/admin/chefs", label: "Chefs", icon: Users },
+    { href: "/admin/coupons", label: "Coupons", icon: Ticket },
     // { href: "/admin/menu", label: "Menu Items", icon: Utensils },
     // { href: "/admin/orders", label: "Orders", icon: ShoppingBag },
     // { href: "/admin/settings", label: "Settings", icon: Settings },

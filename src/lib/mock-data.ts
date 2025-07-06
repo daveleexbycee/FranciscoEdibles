@@ -1,3 +1,4 @@
+
 export type MenuItem = {
   id: string;
   name: string;
@@ -22,6 +23,14 @@ export type Award = {
   year: number;
   issuer: string;
 }
+
+export type Coupon = {
+  id: string;
+  code: string;
+  discountType: 'percentage' | 'fixed';
+  discountValue: number;
+  isActive: boolean;
+};
 
 export const menuItems: MenuItem[] = [
   {
@@ -110,4 +119,10 @@ export const awards: Award[] = [
   { id: 'award-1', title: 'Best Nigerian Restaurant', year: 2023, issuer: 'Lagos Food Critic Awards' },
   { id: 'award-2', title: 'Award of Excellence', year: 2022, issuer: 'Culinary Federation of Nigeria' },
   { id: 'award-3', title: 'Top Jollof Rice', year: 2021, issuer: 'West African Food Festival' },
+];
+
+export const coupons: Coupon[] = [
+  { id: 'coupon-1', code: 'WELCOME10', discountType: 'percentage', discountValue: 10, isActive: true },
+  { id: 'coupon-2', code: 'NAIRA10', discountType: 'fixed', discountValue: 10, isActive: true },
+  { id: 'coupon-3', code: 'INACTIVE', discountType: 'percentage', discountValue: 20, isActive: false },
 ];

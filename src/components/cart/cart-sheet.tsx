@@ -1,3 +1,4 @@
+
 "use client";
 
 import {
@@ -21,8 +22,8 @@ interface CartSheetProps {
 }
 
 export function CartSheet({ open, onOpenChange }: CartSheetProps) {
-  const { items, clearCart } = useCart();
-  const subtotal = items.reduce((sum, item) => sum + item.price * item.quantity, 0);
+  const { items, clearCart, subtotal, discount } = useCart();
+  const total = Math.max(0, subtotal - discount);
 
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
@@ -43,16 +44,28 @@ export function CartSheet({ open, onOpenChange }: CartSheetProps) {
               </div>
             </ScrollArea>
             <SheetFooter className="flex-col gap-4 p-6 bg-secondary/50">
-              <div className="flex justify-between font-semibold text-lg">
-                <span>Subtotal</span>
-                <span>₦{subtotal.toFixed(2)}</span>
+               <div className="space-y-2">
+                <div className="flex justify-between text-sm text-muted-foreground">
+                  <span>Subtotal</span>
+                  <span>₦{subtotal.toFixed(2)}</span>
+                </div>
+                {discount > 0 && (
+                  <div className="flex justify-between text-sm text-primary">
+                    <span>Discount</span>
+                    <span>- ₦{discount.toFixed(2)}</span>
+                  </div>
+                )}
+                <Separator />
+                <div className="flex justify-between font-semibold text-lg">
+                  <span>Total</span>
+                  <span>₦{total.toFixed(2)}</span>
+                </div>
               </div>
-              <Separator />
                <div className="flex justify-between items-center">
                 <Button variant="outline" onClick={clearCart}>
                   Clear Cart
                 </Button>
-                <Button asChild className="w-1/2">
+                <Button asChild className="w-1/2" onClick={() => onOpenChange(false)}>
                     <Link href="/checkout">Checkout</Link>
                 </Button>
               </div>
