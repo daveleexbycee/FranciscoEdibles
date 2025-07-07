@@ -47,7 +47,7 @@ export const menuItems: MenuItem[] = [
     name: 'Spicy Suya Skewers',
     description: 'Tender beef skewers marinated in a spicy peanut blend, grilled to perfection. A popular Nigerian street food.',
     price: 8.50,
-    imageUrl: 'https://placehold.co/400x300.png',
+    imageUrl: 'https://images.unsplash.com/photo-1626323109697-df55d20f06a8?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw5fHxza2V3ZXJzfGVufDB8fHx8MTc1MTkxNjc2M3ww&ixlib=rb-4.1.0&q=80&w=1080',
     category: 'Sides',
     soldOut: false,
   },
