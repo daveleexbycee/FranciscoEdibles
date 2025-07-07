@@ -38,7 +38,7 @@ export const menuItems: MenuItem[] = [
     name: 'Jollof Rice & Chicken',
     description: 'A classic West African dish with fragrant rice cooked in a rich tomato and pepper sauce, served with succulent grilled chicken.',
     price: 15.99,
-    imageUrl: 'https://placehold.co/400x300.png',
+    imageUrl: 'https://images.unsplash.com/photo-1599354607448-8ad6e92b027a?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxNXx8am9sbG9mJTIwcmljZXxlbnwwfHx8fDE3NTE5MTY2NzJ8MA&ixlib=rb-4.1.0&q=80&w=1080',
     category: 'Main Dishes',
     soldOut: false,
   },
