@@ -13,7 +13,7 @@ import {
 const carouselImages = [
   { src: 'https://images.unsplash.com/photo-1604329760661-e71dc83f8f26?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxuaWdlcmlhbiUyMGZvb2RzfGVufDB8fHx8MTc1MTk3MjE3Mnww&ixlib=rb-4.1.0&q=80&w=1080', alt: 'A spread of delicious Nigerian dishes', hint: 'nigerian food' },
   { src: 'https://images.unsplash.com/photo-1638436684761-7e59f8a9072f?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxMHx8bmlnZXJpYW4lMjBmb29kfGVufDB8fHx8MTc1MTk3MjI3Nnww&ixlib=rb-4.1.0&q=80&w=1080', alt: 'Grilled Suya skewers', hint: 'suya skewers' },
-  { src: 'https://placehold.co/650x550.png', alt: 'Egusi soup with fufu', hint: 'egusi soup' },
+  { src: 'https://images.unsplash.com/photo-1595272568891-123402d0fb3b?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxNXx8Y2FrZXN8ZW58MHx8fHwxNzUxOTcyNDA5fDA&ixlib=rb-4.1.0&q=80&w=1080', alt: 'Egusi soup with fufu', hint: 'egusi soup' },
   { src: 'https://placehold.co/650x550.png', alt: 'Fried plantains', hint: 'fried plantains' },
 ];
 
