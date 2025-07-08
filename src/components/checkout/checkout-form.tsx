@@ -1,3 +1,4 @@
+
 "use client";
 
 import React from 'react';
@@ -9,9 +10,11 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { MapPin, LocateFixed } from 'lucide-react';
+import { MapPin, LocateFixed, CreditCard, Truck } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import Image from 'next/image';
+import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
+import { Label } from '@/components/ui/label';
 
 const checkoutSchema = z.object({
   fullName: z.string().min(2, { message: 'Full name must be at least 2 characters.' }),
@@ -19,6 +22,9 @@ const checkoutSchema = z.object({
   address: z.string().min(10, { message: 'Please enter a valid delivery address.' }),
   city: z.string().min(2, { message: 'Please enter a city.' }),
   state: z.string().min(2, { message: 'Please enter a state.' }),
+  paymentMethod: z.enum(['card', 'delivery'], {
+    required_error: 'You must select a payment method.',
+  }),
 });
 
 type CheckoutFormValues = z.infer<typeof checkoutSchema>;
@@ -35,8 +41,11 @@ export default function CheckoutForm() {
       address: '',
       city: '',
       state: '',
+      paymentMethod: 'card',
     },
   });
+
+  const paymentMethod = form.watch('paymentMethod');
 
   const handleUseCurrentLocation = () => {
     setIsLocating(true);
@@ -68,7 +77,9 @@ export default function CheckoutForm() {
     console.log(data);
     toast({
       title: 'Order Placed!',
-      description: 'Thank you for your order! It will be with you shortly.',
+      description: `Thank you for your order! You've chosen to ${
+        data.paymentMethod === 'card' ? 'pay by card' : 'pay on delivery'
+      }.`,
     });
     // Here you would typically handle payment and order submission to a backend.
   }
@@ -76,9 +87,9 @@ export default function CheckoutForm() {
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Delivery Details</CardTitle>
+        <CardTitle>Delivery & Payment</CardTitle>
         <CardDescription>
-          Where should we send your food? You can type your address or use your current location.
+          Where should we send your food and how would you like to pay?
         </CardDescription>
       </CardHeader>
       <CardContent>
@@ -173,7 +184,7 @@ export default function CheckoutForm() {
                     <span className="w-full border-t" />
                 </div>
                 <div className="relative flex justify-center text-xs uppercase">
-                    <span className="bg-background px-2 text-muted-foreground">
+                    <span className="bg-card px-2 text-muted-foreground">
                     Or select on map
                     </span>
                 </div>
@@ -188,8 +199,55 @@ export default function CheckoutForm() {
                 </div>
             </div>
 
+            <div className="relative my-6">
+              <div aria-hidden="true" className="absolute inset-0 flex items-center">
+                <span className="w-full border-t" />
+              </div>
+              <div className="relative flex justify-center text-xs uppercase">
+                <span className="bg-card px-2 text-muted-foreground">Payment Method</span>
+              </div>
+            </div>
+
+            <FormField
+              control={form.control}
+              name="paymentMethod"
+              render={({ field }) => (
+                <FormItem>
+                  <FormControl>
+                    <RadioGroup
+                      onValueChange={field.onChange}
+                      defaultValue={field.value}
+                      className="grid grid-cols-1 md:grid-cols-2 gap-4"
+                    >
+                      <div>
+                        <Label
+                          htmlFor="card"
+                          className="flex flex-col items-center justify-center rounded-md border-2 border-muted bg-popover p-4 hover:bg-accent hover:text-accent-foreground peer-data-[state=checked]:border-primary [&:has([data-state=checked])]:border-primary cursor-pointer h-full"
+                        >
+                          <RadioGroupItem value="card" id="card" className="peer sr-only" />
+                          <CreditCard className="mb-3 h-6 w-6" />
+                          Pay with Card
+                        </Label>
+                      </div>
+                      <div>
+                        <Label
+                          htmlFor="delivery"
+                          className="flex flex-col items-center justify-center rounded-md border-2 border-muted bg-popover p-4 hover:bg-accent hover:text-accent-foreground peer-data-[state=checked]:border-primary [&:has([data-state=checked])]:border-primary cursor-pointer h-full"
+                        >
+                          <RadioGroupItem value="delivery" id="delivery" className="peer sr-only" />
+                          <Truck className="mb-3 h-6 w-6" />
+                          Pay on Delivery
+                        </Label>
+                      </div>
+                    </RadioGroup>
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
             <Button type="submit" size="lg" className="w-full">
-              Proceed to Payment
+              {paymentMethod === 'card' ? 'Proceed to Payment' : 'Place Order'}
             </Button>
           </form>
         </Form>
