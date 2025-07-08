@@ -56,7 +56,7 @@ export const menuItems: MenuItem[] = [
     name: 'Fried Plantains (Dodo)',
     description: 'Sweet, ripe plantains, deep-fried until golden brown and caramelized. The perfect sweet and savory side.',
     price: 4.99,
-    imageUrl: 'https://placehold.co/400x300.png',
+    imageUrl: 'https://images.unsplash.com/photo-1676700310614-600f2aa255ef?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxMXx8RnJpZWQlMjBwbGFudGFpbnxlbnwwfHx8fDE3NTE5Njc2Njh8MA&ixlib=rb-4.1.0&q=80&w=1080',
     category: 'Sides',
     soldOut: true,
   },
