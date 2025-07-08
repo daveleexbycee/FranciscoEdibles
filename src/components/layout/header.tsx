@@ -1,9 +1,10 @@
+
 "use client";
 
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import CartIcon from '@/components/cart/cart-icon';
-import { Flame, Menu, LogOut, User as UserIcon, Shield, Loader2 } from 'lucide-react';
+import { Flame, Menu, LogOut, User as UserIcon, Shield, Loader2, BookOpen, Info, Mail } from 'lucide-react';
 import {
   Sheet,
   SheetContent,
@@ -101,21 +102,25 @@ export default function Header() {
           <Flame className="h-7 w-7 text-primary" />
           <span className="hidden md:inline font-headline text-xl font-bold tracking-wide">Francisco Edibles</span>
         </Link>
-        <nav className="hidden md:flex gap-6 items-center">
-          <Link href="/menu" className="text-sm font-medium text-muted-foreground transition-colors hover:text-primary">
-            Menu
+        <nav className="hidden md:flex gap-8 items-center">
+          <Link href="/menu" className="flex items-center gap-2 text-sm font-medium text-muted-foreground transition-colors hover:text-primary">
+            <BookOpen className="h-4 w-4" />
+            <span>Menu</span>
           </Link>
-          <Link href="/about" className="text-sm font-medium text-muted-foreground transition-colors hover:text-primary">
-            About
+          <Link href="/about" className="flex items-center gap-2 text-sm font-medium text-muted-foreground transition-colors hover:text-primary">
+            <Info className="h-4 w-4" />
+            <span>About</span>
           </Link>
-          <Link href="/#contact" className="text-sm font-medium text-muted-foreground transition-colors hover:text-primary">
-            Contact
+          <Link href="/#contact" className="flex items-center gap-2 text-sm font-medium text-muted-foreground transition-colors hover:text-primary">
+            <Mail className="h-4 w-4" />
+            <span>Contact</span>
           </Link>
         </nav>
         <div className="flex items-center gap-2 md:gap-4">
           <CartIcon />
-          <div className="hidden sm:inline-flex">
+          <div className="hidden md:flex items-center gap-2">
             <UserNav />
+            <ThemeToggle />
           </div>
           <div className="md:hidden">
             <Sheet>
