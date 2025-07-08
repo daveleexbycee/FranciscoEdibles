@@ -74,7 +74,7 @@ export const menuItems: MenuItem[] = [
     name: 'Zobo Drink',
     description: 'A refreshing and tangy hibiscus flower drink, infused with ginger and pineapple for a zesty kick.',
     price: 3.50,
-    imageUrl: 'https://placehold.co/400x300.png',
+    imageUrl: 'https://i.postimg.cc/MTr9s6NR/zobo-1.jpg',
     category: 'Drinks',
     soldOut: false,
   },
