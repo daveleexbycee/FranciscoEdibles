@@ -65,7 +65,7 @@ export const menuItems: MenuItem[] = [
     name: 'Egusi Soup with Pounded Yam',
     description: 'A rich and savory soup made from ground melon seeds, spinach, and assorted meats, served with soft pounded yam.',
     price: 18.00,
-    imageUrl: 'https://placehold.co/400x300.png',
+    imageUrl: 'https://i.postimg.cc/fk4nrjpx/egusi-1.jpg',
     category: 'Main Dishes',
     soldOut: false,
   },
