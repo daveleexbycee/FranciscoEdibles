@@ -11,7 +11,7 @@ import {
 } from "@/components/ui/carousel";
 
 const carouselImages = [
-  { src: 'https://placehold.co/650x550.png', alt: 'Jollof Rice with chicken', hint: 'jollof rice' },
+  { src: 'https://images.unsplash.com/photo-1604329760661-e71dc83f8f26?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxuaWdlcmlhbiUyMGZvb2RzfGVufDB8fHx8MTc1MTk3MjE3Mnww&ixlib=rb-4.1.0&q=80&w=1080', alt: 'A spread of delicious Nigerian dishes', hint: 'nigerian food' },
   { src: 'https://placehold.co/650x550.png', alt: 'Grilled Suya skewers', hint: 'suya skewers' },
   { src: 'https://placehold.co/650x550.png', alt: 'Egusi soup with fufu', hint: 'egusi soup' },
   { src: 'https://placehold.co/650x550.png', alt: 'Fried plantains', hint: 'fried plantains' },
