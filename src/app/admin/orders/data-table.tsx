@@ -6,7 +6,6 @@ import {
   ColumnDef,
   ColumnFiltersState,
   SortingState,
-  Table as TableType,
   flexRender,
   getCoreRowModel,
   getFilteredRowModel,
@@ -24,20 +23,18 @@ import {
 } from "@/components/ui/table"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { Chef } from "@/lib/mock-data"
+import { Order } from "@/lib/mock-data"
 
 interface DataTableProps {
-  columns: ColumnDef<Chef>[]
-  data: Chef[]
-  onEdit: (chef: Chef) => void
-  onDelete: (chef: Chef) => void
+  columns: ColumnDef<Order>[]
+  data: Order[]
+  onUpdateStatus: (order: Order, status: Order['status']) => void
 }
 
-export function DataTable({
+export function DataTable<TData extends Order, TValue>({
   columns,
   data,
-  onEdit,
-  onDelete,
+  onUpdateStatus,
 }: DataTableProps) {
   const [sorting, setSorting] = React.useState<SortingState>([])
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([])
@@ -56,8 +53,7 @@ export function DataTable({
       columnFilters,
     },
     meta: {
-      onEdit,
-      onDelete,
+      onUpdateStatus,
     }
   })
 
@@ -65,10 +61,10 @@ export function DataTable({
     <div>
       <div className="flex items-center py-4">
         <Input
-          placeholder="Filter by name..."
-          value={(table.getColumn("name")?.getFilterValue() as string) ?? ""}
+          placeholder="Filter by customer..."
+          value={(table.getColumn("customerName")?.getFilterValue() as string) ?? ""}
           onChange={(event) =>
-            table.getColumn("name")?.setFilterValue(event.target.value)
+            table.getColumn("customerName")?.setFilterValue(event.target.value)
           }
           className="max-w-sm"
         />

@@ -1,6 +1,7 @@
+
 "use client"
 
-import { Row } from "@tanstack/react-table"
+import { Row, Table } from "@tanstack/react-table"
 import { MoreHorizontal } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import {
@@ -10,14 +11,21 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
+import { Chef } from "@/lib/mock-data"
 
-interface DataTableRowActionsProps<TData> {
-  row: Row<TData>
+interface DataTableRowActionsProps {
+  row: Row<Chef>
+  table: Table<Chef>
 }
 
-export function DataTableRowActions<TData>({
+export function DataTableRowActions({
   row,
-}: DataTableRowActionsProps<TData>) {
+  table,
+}: DataTableRowActionsProps) {
+  const { onEdit, onDelete } = table.options.meta as {
+    onEdit: (chef: Chef) => void,
+    onDelete: (chef: Chef) => void,
+  }
 
   return (
     <DropdownMenu>
@@ -31,10 +39,14 @@ export function DataTableRowActions<TData>({
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="w-[160px]">
-        <DropdownMenuItem>Edit</DropdownMenuItem>
-        <DropdownMenuItem>Update Status</DropdownMenuItem>
+        <DropdownMenuItem onClick={() => onEdit(row.original)}>
+          Edit
+        </DropdownMenuItem>
         <DropdownMenuSeparator />
-        <DropdownMenuItem className="text-destructive focus:text-destructive focus:bg-destructive/10">
+        <DropdownMenuItem 
+          className="text-destructive focus:text-destructive focus:bg-destructive/10"
+          onClick={() => onDelete(row.original)}
+        >
           Delete
         </DropdownMenuItem>
       </DropdownMenuContent>

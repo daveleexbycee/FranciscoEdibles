@@ -1,6 +1,7 @@
+
 "use client"
 
-import { ColumnDef } from "@tanstack/react-table"
+import { ColumnDef, Table } from "@tanstack/react-table"
 import { Chef } from "@/lib/mock-data"
 import { Badge } from "@/components/ui/badge"
 import { DataTableRowActions } from "./data-table-row-actions"
@@ -42,6 +43,6 @@ export const columns: ColumnDef<Chef>[] = [
   },
   {
     id: "actions",
-    cell: ({ row }) => <DataTableRowActions row={row} />,
+    cell: ({ row, table }) => <DataTableRowActions row={row} table={table as Table<Chef>} />,
   },
 ]

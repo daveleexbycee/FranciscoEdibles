@@ -27,9 +27,9 @@ export default function AdminLayout({
     { href: "/admin", label: "Dashboard", icon: Home },
     { href: "/admin/chefs", label: "Chefs", icon: Users },
     { href: "/admin/coupons", label: "Coupons", icon: Ticket },
-    // { href: "/admin/menu", label: "Menu Items", icon: Utensils },
-    // { href: "/admin/orders", label: "Orders", icon: ShoppingBag },
-    // { href: "/admin/settings", label: "Settings", icon: Settings },
+    { href: "/admin/menu", label: "Menu Items", icon: Utensils },
+    { href: "/admin/orders", label: "Orders", icon: ShoppingBag },
+    { href: "/admin/settings", label: "Settings", icon: Settings },
   ]
 
   return (
@@ -45,7 +45,7 @@ export default function AdminLayout({
           <SidebarMenu>
             {menuItems.map((item) => (
               <SidebarMenuItem key={item.label}>
-                <SidebarMenuButton asChild isActive={pathname === item.href}>
+                <SidebarMenuButton asChild isActive={pathname.startsWith(item.href) && (item.href !== '/admin' || pathname === '/admin')}>
                   <Link href={item.href}>
                     <item.icon />
                     <span>{item.label}</span>

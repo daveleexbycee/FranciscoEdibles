@@ -11,21 +11,21 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
-import { Coupon } from "@/lib/mock-data"
+import { MenuItem } from "@/lib/mock-data"
 
 interface DataTableRowActionsProps {
-  row: Row<Coupon>
-  table: Table<Coupon>
+  row: Row<MenuItem>
+  table: Table<MenuItem>
 }
 
-export function DataTableRowActions<TData extends Coupon>({
+export function DataTableRowActions({
   row,
   table,
 }: DataTableRowActionsProps) {
-  const { onEdit, onDelete, onToggleStatus } = table.options.meta as {
-    onEdit: (coupon: Coupon) => void,
-    onDelete: (coupon: Coupon) => void,
-    onToggleStatus: (coupon: Coupon) => void
+  const { onEdit, onDelete, onToggleAvailability } = table.options.meta as {
+    onEdit: (item: MenuItem) => void,
+    onDelete: (item: MenuItem) => void,
+    onToggleAvailability: (item: MenuItem) => void,
   }
 
   return (
@@ -41,7 +41,9 @@ export function DataTableRowActions<TData extends Coupon>({
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="w-[160px]">
         <DropdownMenuItem onClick={() => onEdit(row.original)}>Edit</DropdownMenuItem>
-        <DropdownMenuItem onClick={() => onToggleStatus(row.original)}>Toggle Status</DropdownMenuItem>
+        <DropdownMenuItem onClick={() => onToggleAvailability(row.original)}>
+          Toggle Availability
+        </DropdownMenuItem>
         <DropdownMenuSeparator />
         <DropdownMenuItem 
             className="text-destructive focus:text-destructive focus:bg-destructive/10"

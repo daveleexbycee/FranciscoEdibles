@@ -23,16 +23,23 @@ import {
 } from "@/components/ui/table"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
+import { Coupon } from "@/lib/mock-data"
 
-interface DataTableProps<TData, TValue> {
-  columns: ColumnDef<TData, TValue>[]
-  data: TData[]
+interface DataTableProps {
+  columns: ColumnDef<Coupon>[]
+  data: Coupon[]
+  onEdit: (coupon: Coupon) => void
+  onDelete: (coupon: Coupon) => void
+  onToggleStatus: (coupon: Coupon) => void
 }
 
-export function DataTable<TData, TValue>({
+export function DataTable<TData extends Coupon, TValue>({
   columns,
   data,
-}: DataTableProps<TData, TValue>) {
+  onEdit,
+  onDelete,
+  onToggleStatus,
+}: DataTableProps) {
   const [sorting, setSorting] = React.useState<SortingState>([])
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([])
 
@@ -49,6 +56,11 @@ export function DataTable<TData, TValue>({
       sorting,
       columnFilters,
     },
+    meta: {
+      onEdit,
+      onDelete,
+      onToggleStatus
+    }
   })
 
   return (

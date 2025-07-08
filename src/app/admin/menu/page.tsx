@@ -4,63 +4,63 @@
 import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import { PlusCircle } from "lucide-react"
-import { Coupon, coupons as initialCoupons } from "@/lib/mock-data"
+import { MenuItem, menuItems as initialMenuItems } from "@/lib/mock-data"
 import { columns } from "./columns" 
 import { DataTable } from "./data-table" 
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
-import { CouponForm } from "@/components/admin/coupons/coupon-form"
+import { MenuItemForm } from "@/components/admin/menu/menu-item-form"
 import { useToast } from "@/hooks/use-toast"
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog"
 
-export default function AdminCouponsPage() {
-  const [data, setData] = useState<Coupon[]>(initialCoupons)
+export default function AdminMenuPage() {
+  const [data, setData] = useState<MenuItem[]>(initialMenuItems)
   const [isFormOpen, setFormOpen] = useState(false)
   const [isDeleteAlertOpen, setDeleteAlertOpen] = useState(false)
-  const [selectedCoupon, setSelectedCoupon] = useState<Coupon | null>(null)
+  const [selectedMenuItem, setSelectedMenuItem] = useState<MenuItem | null>(null)
   const { toast } = useToast()
 
-  const handleOpenForm = (coupon: Coupon | null = null) => {
-    setSelectedCoupon(coupon)
+  const handleOpenForm = (item: MenuItem | null = null) => {
+    setSelectedMenuItem(item)
     setFormOpen(true)
   }
 
   const handleCloseForm = () => {
-    setSelectedCoupon(null)
+    setSelectedMenuItem(null)
     setFormOpen(false)
   }
 
-  const handleOpenDeleteAlert = (coupon: Coupon) => {
-    setSelectedCoupon(coupon)
+  const handleOpenDeleteAlert = (item: MenuItem) => {
+    setSelectedMenuItem(item)
     setDeleteAlertOpen(true)
   }
 
   const handleCloseDeleteAlert = () => {
-    setSelectedCoupon(null)
+    setSelectedMenuItem(null)
     setDeleteAlertOpen(false)
   }
 
-  const handleSubmit = (formData: Omit<Coupon, 'id'>) => {
-    if (selectedCoupon) {
-      setData(data.map(c => c.id === selectedCoupon.id ? { ...c, ...formData } : c))
-      toast({ title: "Coupon Updated", description: `Coupon "${formData.code}" has been updated.`})
+  const handleSubmit = (formData: Omit<MenuItem, 'id'>) => {
+    if (selectedMenuItem) {
+      setData(data.map(item => item.id === selectedMenuItem.id ? { ...item, ...formData } : item))
+      toast({ title: "Menu Item Updated", description: `${formData.name} has been updated.`})
     } else {
-      const newCoupon = { ...formData, id: `coupon-${Date.now()}` }
-      setData([...data, newCoupon])
-      toast({ title: "Coupon Added", description: `Coupon "${formData.code}" has been added.`})
+      const newItem = { ...formData, id: `menu-${Date.now()}` }
+      setData([...data, newItem])
+      toast({ title: "Menu Item Added", description: `${formData.name} has been added to the menu.`})
     }
     handleCloseForm()
   }
 
   const handleDelete = () => {
-    if (!selectedCoupon) return
-    setData(data.filter(c => c.id !== selectedCoupon.id))
-    toast({ variant: "destructive", title: "Coupon Deleted", description: `Coupon "${selectedCoupon.code}" has been deleted.`})
+    if (!selectedMenuItem) return
+    setData(data.filter(item => item.id !== selectedMenuItem.id))
+    toast({ variant: "destructive", title: "Menu Item Deleted", description: `${selectedMenuItem.name} has been deleted.`})
     handleCloseDeleteAlert()
   }
 
-  const handleToggleStatus = (coupon: Coupon) => {
-    setData(data.map(c => c.id === coupon.id ? { ...c, isActive: !c.isActive } : c))
-    toast({ title: "Status Updated", description: `Coupon "${coupon.code}" status changed to ${!coupon.isActive ? 'Active' : 'Inactive'}.`})
+  const handleToggleAvailability = (itemToToggle: MenuItem) => {
+    setData(data.map(item => item.id === itemToToggle.id ? { ...item, soldOut: !item.soldOut } : item))
+    toast({ title: "Availability Updated", description: `${itemToToggle.name} is now ${!itemToToggle.soldOut ? 'available' : 'sold out'}.`})
   }
 
   return (
@@ -68,14 +68,14 @@ export default function AdminCouponsPage() {
       <div className="space-y-4">
         <div className="flex items-center justify-between">
           <div>
-            <h2 className="text-2xl font-bold tracking-tight">Manage Coupons</h2>
+            <h2 className="text-2xl font-bold tracking-tight">Manage Menu Items</h2>
             <p className="text-muted-foreground">
-              Here you can add, update, and remove promotional coupons.
+              Add, edit, and manage the dishes on your restaurant's menu.
             </p>
           </div>
           <Button onClick={() => handleOpenForm()}>
             <PlusCircle className="mr-2 h-4 w-4" />
-            Add New Coupon
+            Add New Item
           </Button>
         </div>
         <DataTable 
@@ -83,17 +83,17 @@ export default function AdminCouponsPage() {
           data={data} 
           onEdit={handleOpenForm} 
           onDelete={handleOpenDeleteAlert}
-          onToggleStatus={handleToggleStatus}
+          onToggleAvailability={handleToggleAvailability}
         />
       </div>
 
       <Dialog open={isFormOpen} onOpenChange={setFormOpen}>
-        <DialogContent className="sm:max-w-[425px]">
+        <DialogContent className="sm:max-w-md">
           <DialogHeader>
-            <DialogTitle>{selectedCoupon ? 'Edit Coupon' : 'Add New Coupon'}</DialogTitle>
+            <DialogTitle>{selectedMenuItem ? 'Edit Menu Item' : 'Add New Menu Item'}</DialogTitle>
           </DialogHeader>
-          <CouponForm 
-            initialData={selectedCoupon}
+          <MenuItemForm 
+            initialData={selectedMenuItem}
             onSubmit={handleSubmit}
             onCancel={handleCloseForm}
           />
@@ -105,7 +105,7 @@ export default function AdminCouponsPage() {
           <AlertDialogHeader>
             <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
             <AlertDialogDescription>
-              This action cannot be undone. This will permanently delete the coupon.
+              This action cannot be undone. This will permanently delete this menu item.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>

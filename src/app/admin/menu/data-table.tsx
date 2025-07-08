@@ -6,7 +6,6 @@ import {
   ColumnDef,
   ColumnFiltersState,
   SortingState,
-  Table as TableType,
   flexRender,
   getCoreRowModel,
   getFilteredRowModel,
@@ -24,20 +23,22 @@ import {
 } from "@/components/ui/table"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { Chef } from "@/lib/mock-data"
+import { MenuItem } from "@/lib/mock-data"
 
 interface DataTableProps {
-  columns: ColumnDef<Chef>[]
-  data: Chef[]
-  onEdit: (chef: Chef) => void
-  onDelete: (chef: Chef) => void
+  columns: ColumnDef<MenuItem>[]
+  data: MenuItem[]
+  onEdit: (item: MenuItem) => void
+  onDelete: (item: MenuItem) => void
+  onToggleAvailability: (item: MenuItem) => void
 }
 
-export function DataTable({
+export function DataTable<TData extends MenuItem, TValue>({
   columns,
   data,
   onEdit,
   onDelete,
+  onToggleAvailability,
 }: DataTableProps) {
   const [sorting, setSorting] = React.useState<SortingState>([])
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([])
@@ -58,6 +59,7 @@ export function DataTable({
     meta: {
       onEdit,
       onDelete,
+      onToggleAvailability,
     }
   })
 

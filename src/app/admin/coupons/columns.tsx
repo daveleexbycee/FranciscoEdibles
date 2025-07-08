@@ -1,7 +1,7 @@
 
 "use client"
 
-import { ColumnDef } from "@tanstack/react-table"
+import { ColumnDef, Table } from "@tanstack/react-table"
 import { Coupon } from "@/lib/mock-data"
 import { Badge } from "@/components/ui/badge"
 import { DataTableRowActions } from "./data-table-row-actions"
@@ -20,7 +20,7 @@ export const columns: ColumnDef<Coupon>[] = [
     cell: ({ row }) => {
         const type = row.original.discountType
         const value = row.original.discountValue
-        return type === 'percentage' ? `${value}%` : `₦${value.toFixed(2)}`
+        return type === 'percentage' ? `${value}%` : `₦${value.toLocaleString()}`
     }
   },
   {
@@ -36,6 +36,6 @@ export const columns: ColumnDef<Coupon>[] = [
   },
   {
     id: "actions",
-    cell: ({ row }) => <DataTableRowActions row={row} />,
+    cell: ({ row, table }) => <DataTableRowActions row={row} table={table as Table<Coupon>} />,
   },
 ]
