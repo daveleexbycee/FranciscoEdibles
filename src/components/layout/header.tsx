@@ -68,7 +68,7 @@ export default function Header() {
               </div>
             </DropdownMenuLabel>
             <DropdownMenuSeparator />
-            {user.email === process.env.NEXT_PUBLIC_ADMIN_EMAIL && (
+            {user.email === "georgebowman1972@gmail.com" && (
                <DropdownMenuItem onClick={() => router.push('/admin')}>
                 <Shield className="mr-2 h-4 w-4" />
                 <span>Admin</span>
@@ -153,7 +153,7 @@ export default function Header() {
                 <div className="mt-auto flex flex-col gap-4 border-t pt-6">
                   {loading ? <Button disabled><Loader2 className="mr-2 h-4 w-4 animate-spin" />Loading...</Button> : user ? (
                     <>
-                      {user.email === process.env.NEXT_PUBLIC_ADMIN_EMAIL && (
+                      {user.email === "georgebowman1972@gmail.com" && (
                         <SheetClose asChild>
                            <Button variant="outline" onClick={() => router.push('/admin')}>Admin</Button>
                         </SheetClose>

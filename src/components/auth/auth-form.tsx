@@ -63,7 +63,7 @@ export default function AuthForm() {
         description: `Welcome back, ${user.displayName || user.email}!`,
       })
 
-      if (user.email === process.env.NEXT_PUBLIC_ADMIN_EMAIL) {
+      if (user.email === "georgebowman1972@gmail.com") {
         router.push("/admin")
       } else {
         router.push("/")
@@ -134,7 +134,7 @@ export default function AuthForm() {
         title: "Login Successful",
         description: `Welcome, ${user.displayName || user.email}!`,
       });
-      if (user.email === process.env.NEXT_PUBLIC_ADMIN_EMAIL) {
+      if (user.email === "georgebowman1972@gmail.com") {
         router.push("/admin");
       } else {
         router.push("/");
