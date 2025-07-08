@@ -83,7 +83,7 @@ export const menuItems: MenuItem[] = [
     name: 'Puff Puff',
     description: 'Light and airy sweet dough balls, deep-fried to a golden perfection. An irresistible Nigerian snack.',
     price: 5.00,
-    imageUrl: 'https://placehold.co/400x300.png',
+    imageUrl: 'https://images.unsplash.com/photo-1664993085274-80c6ba725ccc?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxQdWZmJTIwcHVmZnxlbnwwfHx8fDE3NTE5Njc3Njl8MA&ixlib=rb-4.1.0&q=80&w=1080',
     category: 'Desserts',
     soldOut: false,
   },
