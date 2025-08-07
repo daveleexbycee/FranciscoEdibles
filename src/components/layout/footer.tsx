@@ -1,5 +1,6 @@
 import { Flame } from "lucide-react";
 import Link from "next/link";
+import Script from "next/script";
 
 export default function Footer() {
   const socialLinks = [
@@ -64,6 +65,7 @@ export default function Footer() {
           <p>&copy; {new Date().getFullYear()} Francisco Edibles. All rights reserved.</p>
         </div>
       </div>
+      <Script type='text/javascript' src='//pl27370345.profitableratecpm.com/a9/90/fc/a990fcf2a106aa98c0fdb25760e4dae5.js' />
     </footer>
   );
 }
