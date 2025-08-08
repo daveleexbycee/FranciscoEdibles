@@ -43,7 +43,22 @@ export default function AboutPage() {
            </div>
         </section>
       </div>
-      <Script type='text/javascript' src='//pl27370345.profitableratecpm.com/a9/90/fc/a990fcf2a106aa98c0fdb25760e4dae5.js' />
+      <Script id="adsterra-config-about" strategy="lazyOnload">
+        {`
+          atOptions = {
+            'key' : '3896d1f899c8b3a6de8dd59794ad2a90',
+            'format' : 'iframe',
+            'height' : 250,
+            'width' : 300,
+            'params' : {}
+          };
+        `}
+      </Script>
+      <Script
+        id="adsterra-script-about"
+        strategy="lazyOnload"
+        src="//www.highperformanceformat.com/3896d1f899c8b3a6de8dd59794ad2a90/invoke.js"
+      />
     </>
   );
 }
