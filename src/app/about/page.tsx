@@ -1,10 +1,27 @@
 import Image from "next/image";
-import { chefs, awards } from "@/lib/mock-data";
+import { awards, type Chef } from "@/lib/mock-data";
 import ChefCard from "@/components/about/chef-card";
 import { Award } from "lucide-react";
 import Script from "next/script";
+import { collection, getDocs } from "firebase/firestore";
+import { db } from "@/lib/firebase";
 
-export default function AboutPage() {
+async function getChefs(): Promise<Chef[]> {
+  // This is a server component, so we can fetch data directly.
+  try {
+    const querySnapshot = await getDocs(collection(db, "chefs"));
+    const chefsData = querySnapshot.docs.map(doc => ({ ...(doc.data() as Omit<Chef, 'id'>), id: doc.id }));
+    return chefsData;
+  } catch (error) {
+    console.error("Error fetching chefs for about page: ", error);
+    return []; // Return empty array on error
+  }
+}
+
+
+export default async function AboutPage() {
+  const chefs = await getChefs();
+
   return (
     <>
       <div className="container mx-auto px-4 py-8 sm:py-16">
@@ -17,11 +34,15 @@ export default function AboutPage() {
 
         <section id="chefs" className="mb-16">
           <h2 className="font-headline text-3xl md:text-4xl font-bold text-center mb-8">Meet Our Culinary Team</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {chefs.map(chef => (
-              <ChefCard key={chef.id} chef={chef} />
-            ))}
-          </div>
+           {chefs.length > 0 ? (
+             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                {chefs.map(chef => (
+                  <ChefCard key={chef.id} chef={chef} />
+                ))}
+              </div>
+           ) : (
+             <p className="text-center text-muted-foreground">Our talented chefs are getting ready. Check back soon!</p>
+           )}
         </section>
 
         <section id="awards">

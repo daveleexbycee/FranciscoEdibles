@@ -1,11 +1,29 @@
-import { menuItems } from "@/lib/mock-data";
 import MenuCard from "../menu/menu-card";
 import { Button } from "../ui/button";
 import Link from "next/link";
-import { ArrowRight } from "lucide-react";
+import { ArrowRight, Loader2 } from "lucide-react";
+import { collection, getDocs, limit, query, where } from "firebase/firestore";
+import { db } from "@/lib/firebase";
+import { MenuItem } from "@/lib/mock-data";
 
-export default function FeaturedMenu() {
-  const featured = menuItems.filter(item => !item.soldOut).slice(0, 3);
+async function getFeaturedItems(): Promise<MenuItem[]> {
+   try {
+    const q = query(
+      collection(db, "menuItems"), 
+      where("soldOut", "==", false), 
+      limit(3)
+    );
+    const querySnapshot = await getDocs(q);
+    const itemsData = querySnapshot.docs.map(doc => ({ ...(doc.data() as Omit<MenuItem, 'id'>), id: doc.id }));
+    return itemsData;
+  } catch (error) {
+    console.error("Error fetching featured menu items: ", error);
+    return [];
+  }
+}
+
+export default async function FeaturedMenu() {
+  const featured = await getFeaturedItems();
 
   return (
     <section id="featured" className="py-12 sm:py-24 bg-background">
@@ -16,11 +34,17 @@ export default function FeaturedMenu() {
             Handpicked by our chefs, these are the dishes you don't want to miss.
           </p>
         </div>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {featured.map(item => (
-            <MenuCard key={item.id} item={item} />
-          ))}
-        </div>
+        {featured.length > 0 ? (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {featured.map(item => (
+              <MenuCard key={item.id} item={item} />
+            ))}
+          </div>
+        ) : (
+           <div className="text-center text-muted-foreground">
+             <p>Our featured dishes are being prepared. Please check back soon!</p>
+           </div>
+        )}
         <div className="text-center mt-12">
             <Button size="lg" asChild>
                 <Link href="/menu">

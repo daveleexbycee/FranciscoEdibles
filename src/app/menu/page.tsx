@@ -1,20 +1,47 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import MenuCard from "@/components/menu/menu-card";
-import { menuItems, categories } from "@/lib/mock-data";
+import { type MenuItem } from "@/lib/mock-data";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Search } from "lucide-react";
+import { Loader2, Search } from "lucide-react";
+import { collection, getDocs, query, where } from "firebase/firestore";
+import { db } from "@/lib/firebase";
+
+type MenuItemWithId = MenuItem & { id: string };
 
 export default function MenuPage() {
+  const [menuItems, setMenuItems] = useState<MenuItemWithId[]>([]);
+  const [categories, setCategories] = useState<string[]>(['All']);
+  const [isLoading, setIsLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("All");
+
+  useEffect(() => {
+    const fetchMenuItems = async () => {
+      setIsLoading(true);
+      try {
+        const q = query(collection(db, "menuItems"), where("soldOut", "==", false));
+        const querySnapshot = await getDocs(q);
+        const itemsData = querySnapshot.docs.map(doc => ({ ...doc.data() as MenuItem, id: doc.id }));
+        setMenuItems(itemsData);
+        
+        const uniqueCategories = ['All', ...new Set(itemsData.map(item => item.category))];
+        setCategories(uniqueCategories);
+      } catch (error) {
+        console.error("Error fetching menu items: ", error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    fetchMenuItems();
+  }, []);
 
   const filteredItems = menuItems.filter(item => {
     const matchesCategory = selectedCategory === "All" || item.category === selectedCategory;
     const matchesSearch = item.name.toLowerCase().includes(searchTerm.toLowerCase());
-    return matchesCategory && matchesSearch;
+    return matchesCategory && matchesSearch && !item.soldOut;
   });
 
   return (
@@ -52,7 +79,11 @@ export default function MenuPage() {
         </div>
       </div>
 
-      {filteredItems.length > 0 ? (
+      {isLoading ? (
+        <div className="flex justify-center items-center h-64">
+          <Loader2 className="h-8 w-8 animate-spin text-primary" />
+        </div>
+      ) : filteredItems.length > 0 ? (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
           {filteredItems.map(item => (
             <MenuCard key={item.id} item={item} />
