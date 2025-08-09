@@ -2,8 +2,10 @@
 "use client";
 
 import React, { createContext, useState, ReactNode, useEffect, useMemo } from 'react';
-import { type MenuItem, type Coupon, coupons as availableCoupons } from '@/lib/mock-data';
+import { type MenuItem, type Coupon } from '@/lib/mock-data';
 import { useToast } from "@/hooks/use-toast";
+import { collection, query, where, getDocs } from 'firebase/firestore';
+import { db } from '@/lib/firebase';
 
 export interface CartItem extends MenuItem {
   quantity: number;
@@ -89,20 +91,37 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
     setAppliedCoupon(null);
   }
 
-  const applyCoupon = (couponCode: string) => {
-    const couponToApply = availableCoupons.find(c => c.code.toUpperCase() === couponCode.toUpperCase());
-    if (couponToApply && couponToApply.isActive) {
-      setAppliedCoupon(couponToApply);
-      toast({
-        title: "Coupon Applied!",
-        description: `You've successfully applied the "${couponToApply.code}" coupon.`
-      });
-    } else {
-      setAppliedCoupon(null);
+  const applyCoupon = async (couponCode: string) => {
+    const q = query(
+      collection(db, "coupons"), 
+      where("code", "==", couponCode.toUpperCase()),
+      where("isActive", "==", true)
+    );
+    
+    try {
+      const querySnapshot = await getDocs(q);
+      if (!querySnapshot.empty) {
+        const couponDoc = querySnapshot.docs[0];
+        const couponToApply = { id: couponDoc.id, ...couponDoc.data() } as Coupon;
+        setAppliedCoupon(couponToApply);
+        toast({
+          title: "Coupon Applied!",
+          description: `You've successfully applied the "${couponToApply.code}" coupon.`
+        });
+      } else {
+        setAppliedCoupon(null);
+        toast({
+          variant: "destructive",
+          title: "Invalid Coupon",
+          description: "The coupon code you entered is invalid or has expired."
+        });
+      }
+    } catch (error) {
+      console.error("Error applying coupon: ", error);
       toast({
         variant: "destructive",
-        title: "Invalid Coupon",
-        description: "The coupon code you entered is invalid or has expired."
+        title: "Error",
+        description: "Could not validate your coupon. Please try again."
       });
     }
   };
