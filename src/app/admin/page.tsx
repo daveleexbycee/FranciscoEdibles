@@ -11,6 +11,7 @@ import { collection, getDocs } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 import { Loader2, RotateCw } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 
 type OrderWithId = Order & { id: string };
 
@@ -20,6 +21,7 @@ export default function AdminDashboardPage() {
   const [chefs, setChefs] = useState<Chef[]>([]);
   const [menuItems, setMenuItems] = useState<MenuItem[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [isResetAlertOpen, setResetAlertOpen] = useState(false);
 
   const fetchData = async () => {
     setIsLoading(true);
@@ -53,6 +55,7 @@ export default function AdminDashboardPage() {
   
   const handleReset = () => {
     setOrders([]);
+    setResetAlertOpen(false);
   }
 
   const handleReload = () => {
@@ -74,45 +77,63 @@ export default function AdminDashboardPage() {
   }
 
   return (
-    <div className="space-y-8">
-       <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-2xl font-bold tracking-tight">Dashboard</h1>
-            <p className="text-muted-foreground">
-              An overview of your restaurant's performance.
-            </p>
+    <>
+      <div className="space-y-8">
+         <div className="flex items-center justify-between">
+            <div>
+              <h1 className="text-2xl font-bold tracking-tight">Dashboard</h1>
+              <p className="text-muted-foreground">
+                An overview of your restaurant's performance.
+              </p>
+            </div>
+            <div className="flex items-center gap-2">
+              <Button variant="outline" onClick={() => setResetAlertOpen(true)}>Reset Data</Button>
+              <Button onClick={handleReload}><RotateCw className="mr-2" /> Reload Data</Button>
+            </div>
           </div>
-          <div className="flex items-center gap-2">
-            <Button variant="outline" onClick={handleReset}>Reset Data</Button>
-            <Button onClick={handleReload}><RotateCw className="mr-2" /> Reload Data</Button>
-          </div>
-        </div>
-      
-      <OverviewCards 
-        totalRevenue={totalRevenue}
-        totalOrders={totalOrders}
-        chefCount={chefs.length}
-        menuItemCount={menuItems.length}
-      />
+        
+        <OverviewCards 
+          totalRevenue={totalRevenue}
+          totalOrders={totalOrders}
+          chefCount={chefs.length}
+          menuItemCount={menuItems.length}
+        />
 
-      <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-7">
-        <Card className="col-span-1 lg:col-span-4">
-          <CardHeader>
-            <CardTitle>Sales Overview</CardTitle>
-          </CardHeader>
-          <CardContent className="pl-2">
-            <SalesChart data={orders} />
-          </CardContent>
-        </Card>
-        <Card className="col-span-1 lg:col-span-3">
-           <CardHeader>
-            <CardTitle>Recent Orders</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <RecentOrders data={orders} />
-          </CardContent>
-        </Card>
+        <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-7">
+          <Card className="col-span-1 lg:col-span-4">
+            <CardHeader>
+              <CardTitle>Sales Overview</CardTitle>
+            </CardHeader>
+            <CardContent className="pl-2">
+              <SalesChart data={orders} />
+            </CardContent>
+          </Card>
+          <Card className="col-span-1 lg:col-span-3">
+             <CardHeader>
+              <CardTitle>Recent Orders</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <RecentOrders data={orders} />
+            </CardContent>
+          </Card>
+        </div>
       </div>
-    </div>
+
+      <AlertDialog open={isResetAlertOpen} onOpenChange={setResetAlertOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+            <AlertDialogDescription>
+              This will temporarily clear the dashboard view. Your order data will not be deleted. The original data will reappear if you reload the page.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel onClick={() => setResetAlertOpen(false)}>Cancel</AlertDialogCancel>
+            <AlertDialogAction onClick={handleReset}>Continue</AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+    </>
   )
 }
+
