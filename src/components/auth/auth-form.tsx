@@ -63,7 +63,7 @@ export default function AuthForm() {
         description: `Welcome back, ${user.displayName || user.email}!`,
       })
 
-      if (user.email === "georgebowman1972@gmail.com") {
+      if (user.email === "Agbidave40@gmail.com") {
         router.push("/admin")
       } else {
         router.push("/")
@@ -102,7 +102,11 @@ export default function AuthForm() {
         title: "Account Created!",
         description: "Welcome to Francisco Edibles!",
       })
-      router.push("/")
+      if (user.email === "Agbidave40@gmail.com") {
+        router.push("/admin")
+      } else {
+        router.push("/")
+      }
     } catch (error: any) {
        toast({
         variant: "destructive",
@@ -134,7 +138,7 @@ export default function AuthForm() {
         title: "Login Successful",
         description: `Welcome, ${user.displayName || user.email}!`,
       });
-      if (user.email === "georgebowman1972@gmail.com") {
+      if (user.email === "Agbidave40@gmail.com") {
         router.push("/admin");
       } else {
         router.push("/");
