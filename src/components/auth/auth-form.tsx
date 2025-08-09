@@ -1,3 +1,4 @@
+
 "use client"
 
 import { useState } from "react"
@@ -63,7 +64,7 @@ export default function AuthForm() {
         description: `Welcome back, ${user.displayName || user.email}!`,
       })
 
-      if (user.email === "Agbidave40@gmail.com") {
+      if (user.email?.toLowerCase() === "agbidave40@gmail.com") {
         router.push("/admin")
       } else {
         router.push("/")
@@ -102,7 +103,7 @@ export default function AuthForm() {
         title: "Account Created!",
         description: "Welcome to Francisco Edibles!",
       })
-      if (user.email === "Agbidave40@gmail.com") {
+      if (user.email?.toLowerCase() === "agbidave40@gmail.com") {
         router.push("/admin")
       } else {
         router.push("/")
@@ -138,7 +139,7 @@ export default function AuthForm() {
         title: "Login Successful",
         description: `Welcome, ${user.displayName || user.email}!`,
       });
-      if (user.email === "Agbidave40@gmail.com") {
+      if (user.email?.toLowerCase() === "agbidave40@gmail.com") {
         router.push("/admin");
       } else {
         router.push("/");
@@ -299,3 +300,5 @@ export default function AuthForm() {
     </Tabs>
   )
 }
+
+    
