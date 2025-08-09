@@ -4,7 +4,7 @@
 import { useState, useEffect } from "react"
 import { Button } from "@/components/ui/button"
 import { Loader2, PlusCircle } from "lucide-react"
-import { Chef, chefs as initialChefs } from "@/lib/mock-data"
+import { Chef } from "@/lib/mock-data"
 import { columns } from "./columns" 
 import { DataTable } from "./data-table" 
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
