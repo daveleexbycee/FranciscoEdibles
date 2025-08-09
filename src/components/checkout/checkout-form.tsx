@@ -20,6 +20,7 @@ import { addDoc, collection } from 'firebase/firestore';
 import { useRouter } from 'next/navigation';
 import { AlertDialog, AlertDialogAction, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '../ui/alert-dialog';
 import { GoogleMap, useJsApiLoader, Marker } from '@react-google-maps/api';
+import Link from 'next/link';
 
 const containerStyle = {
   width: '100%',
@@ -52,6 +53,8 @@ export default function CheckoutForm() {
   const [isSubmitting, setIsSubmitting] = React.useState(false);
   const [isLocating, setIsLocating] = React.useState(false);
   const [isAlertOpen, setAlertOpen] = React.useState(false);
+  const [isSuccessAlertOpen, setSuccessAlertOpen] = React.useState(false);
+  const [newOrderId, setNewOrderId] = React.useState('');
   const [mapCenter, setMapCenter] = React.useState(defaultCenter);
   const [markerPosition, setMarkerPosition] = React.useState(defaultCenter);
 
@@ -166,15 +169,11 @@ export default function CheckoutForm() {
         paymentMethod: data.paymentMethod,
       };
 
-      await addDoc(collection(db, "orders"), orderData);
-      
+      const docRef = await addDoc(collection(db, "orders"), orderData);
+      setNewOrderId(docRef.id);
+      setSuccessAlertOpen(true);
       clearCart();
-      toast({
-        title: 'Order Placed!',
-        description: `Thank you for your order! It has been successfully placed.`,
-      });
-      router.push('/');
-
+      
     } catch (error) {
       console.error("Error placing order:", error);
       toast({
@@ -195,6 +194,11 @@ export default function CheckoutForm() {
       getAddressFromCoordinates(newPos.lat, newPos.lng);
     }
   };
+
+  const handleSuccessAlertClose = () => {
+    setSuccessAlertOpen(false);
+    router.push('/');
+  }
 
   const renderMap = () => {
     if (loadError) {
@@ -412,6 +416,22 @@ export default function CheckoutForm() {
                {isSubmitting && <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-primary-foreground mr-2" />}
               Confirm Order
             </Button>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      <AlertDialog open={isSuccessAlertOpen} onOpenChange={setSuccessAlertOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Order Placed Successfully!</AlertDialogTitle>
+            <AlertDialogDescription>
+               <p>Thank you for your order! Here is your Order ID:</p>
+               <div className="font-mono text-lg bg-muted p-2 rounded-md my-2 text-center text-primary">{newOrderId}</div>
+               <p>You can use this ID to check the status of your order on the <Link href="/track-order" className="underline font-semibold">Track Order</Link> page.</p>
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <Button onClick={handleSuccessAlertClose}>Continue Shopping</Button>
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
