@@ -45,6 +45,28 @@ export default async function AboutPage() {
            )}
         </section>
 
+        <section className="my-16 flex justify-center">
+            <div className="border p-4 rounded-lg shadow-sm bg-card">
+                 <Script id="adsterra-config-about" strategy="lazyOnload">
+                    {`
+                    atOptions = {
+                        'key' : '3896d1f899c8b3a6de8dd59794ad2a90',
+                        'format' : 'iframe',
+                        'height' : 250,
+                        'width' : 300,
+                        'params' : {}
+                    };
+                    `}
+                </Script>
+                <Script
+                    id="adsterra-script-about"
+                    strategy="lazyOnload"
+                    src="//www.highperformanceformat.com/3896d1f899c8b3a6de8dd59794ad2a90/invoke.js"
+                />
+            </div>
+        </section>
+
+
         <section id="awards">
            <h2 className="font-headline text-3xl md:text-4xl font-bold text-center mb-8">Our Accolades</h2>
            <div className="max-w-2xl mx-auto">
@@ -64,22 +86,6 @@ export default async function AboutPage() {
            </div>
         </section>
       </div>
-      <Script id="adsterra-config-about" strategy="lazyOnload">
-        {`
-          atOptions = {
-            'key' : '3896d1f899c8b3a6de8dd59794ad2a90',
-            'format' : 'iframe',
-            'height' : 250,
-            'width' : 300,
-            'params' : {}
-          };
-        `}
-      </Script>
-      <Script
-        id="adsterra-script-about"
-        strategy="lazyOnload"
-        src="//www.highperformanceformat.com/3896d1f899c8b3a6de8dd59794ad2a90/invoke.js"
-      />
     </>
   );
 }
