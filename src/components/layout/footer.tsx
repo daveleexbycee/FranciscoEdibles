@@ -65,22 +65,6 @@ export default function Footer() {
           <p>&copy; {new Date().getFullYear()} Francisco Edibles. All rights reserved.</p>
         </div>
       </div>
-      <Script id="adsterra-config-footer" strategy="lazyOnload">
-        {`
-          atOptions = {
-            'key' : '3896d1f899c8b3a6de8dd59794ad2a90',
-            'format' : 'iframe',
-            'height' : 250,
-            'width' : 300,
-            'params' : {}
-          };
-        `}
-      </Script>
-      <Script
-        id="adsterra-script-footer"
-        strategy="lazyOnload"
-        src="//www.highperformanceformat.com/3896d1f899c8b3a6de8dd59794ad2a90/invoke.js"
-      />
     </footer>
   );
 }

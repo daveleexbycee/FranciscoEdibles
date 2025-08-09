@@ -11,6 +11,7 @@ import { doc, getDoc } from "firebase/firestore"
 import { Order } from "@/lib/mock-data"
 import { format } from "date-fns"
 import { Badge } from "@/components/ui/badge"
+import Script from "next/script"
 
 const statusVariant: { [key in Order['status']]: "default" | "secondary" | "outline" | "destructive" } = {
   Pending: "outline",
@@ -132,6 +133,27 @@ export default function TrackOrderPage() {
                     </div>
                 )}
             </div>
+            
+            <section className="mt-16 flex justify-center">
+                <div className="border p-4 rounded-lg shadow-sm bg-card">
+                    <Script id="adsterra-config-track" strategy="lazyOnload">
+                        {`
+                        atOptions = {
+                            'key' : '3896d1f899c8b3a6de8dd59794ad2a90',
+                            'format' : 'iframe',
+                            'height' : 250,
+                            'width' : 300,
+                            'params' : {}
+                        };
+                        `}
+                    </Script>
+                    <Script
+                        id="adsterra-script-track"
+                        strategy="lazyOnload"
+                        src="//www.highperformanceformat.com/3896d1f899c8b3a6de8dd59794ad2a90/invoke.js"
+                    />
+                </div>
+            </section>
         </div>
     )
 }
