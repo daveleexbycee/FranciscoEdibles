@@ -1,16 +1,67 @@
 
-import { chefs, menuItems, orders } from "@/lib/mock-data";
+"use client"
+
+import { useState, useEffect } from "react";
+import { Chef, MenuItem, Order } from "@/lib/mock-data";
 import OverviewCards from "@/components/admin/dashboard/overview-cards";
 import SalesChart from "@/components/admin/dashboard/sales-chart";
 import RecentOrders from "@/components/admin/dashboard/recent-orders";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { collection, getDocs } from "firebase/firestore";
+import { db } from "@/lib/firebase";
+import { Loader2 } from "lucide-react";
+
+type OrderWithId = Order & { id: string };
 
 export default function AdminDashboardPage() {
+  const [orders, setOrders] = useState<OrderWithId[]>([]);
+  const [chefs, setChefs] = useState<Chef[]>([]);
+  const [menuItems, setMenuItems] = useState<MenuItem[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      setIsLoading(true);
+      try {
+        const [ordersSnap, chefsSnap, menuItemsSnap] = await Promise.all([
+          getDocs(collection(db, "orders")),
+          getDocs(collection(db, "chefs")),
+          getDocs(collection(db, "menuItems")),
+        ]);
+
+        const ordersData = ordersSnap.docs.map(doc => ({ ...doc.data() as Order, id: doc.id }));
+        setOrders(ordersData);
+
+        const chefsData = chefsSnap.docs.map(doc => doc.data() as Chef);
+        setChefs(chefsData);
+
+        const menuItemsData = menuItemsSnap.docs.map(doc => doc.data() as MenuItem);
+        setMenuItems(menuItemsData);
+
+      } catch (error) {
+        console.error("Error fetching dashboard data: ", error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchData();
+  }, []);
+
+
   const totalRevenue = orders
     .filter(order => order.status === 'Delivered')
     .reduce((sum, order) => sum + order.total, 0);
 
   const totalOrders = orders.length;
+
+  if (isLoading) {
+    return (
+       <div className="flex justify-center items-center h-[calc(100vh-8rem)]">
+        <Loader2 className="h-10 w-10 animate-spin text-primary" />
+      </div>
+    )
+  }
 
   return (
     <div className="space-y-8">

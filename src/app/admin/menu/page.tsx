@@ -1,25 +1,48 @@
 
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { Button } from "@/components/ui/button"
-import { PlusCircle } from "lucide-react"
-import { MenuItem, menuItems as initialMenuItems } from "@/lib/mock-data"
+import { Loader2, PlusCircle } from "lucide-react"
+import { MenuItem } from "@/lib/mock-data"
 import { columns } from "./columns" 
 import { DataTable } from "./data-table" 
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import { MenuItemForm } from "@/components/admin/menu/menu-item-form"
 import { useToast } from "@/hooks/use-toast"
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog"
+import { collection, getDocs, addDoc, updateDoc, deleteDoc, doc } from "firebase/firestore"
+import { db } from "@/lib/firebase"
+
+type MenuItemWithId = MenuItem & { id: string };
 
 export default function AdminMenuPage() {
-  const [data, setData] = useState<MenuItem[]>(initialMenuItems)
+  const [data, setData] = useState<MenuItemWithId[]>([])
+  const [isLoading, setIsLoading] = useState(true)
   const [isFormOpen, setFormOpen] = useState(false)
   const [isDeleteAlertOpen, setDeleteAlertOpen] = useState(false)
-  const [selectedMenuItem, setSelectedMenuItem] = useState<MenuItem | null>(null)
+  const [selectedMenuItem, setSelectedMenuItem] = useState<MenuItemWithId | null>(null)
   const { toast } = useToast()
 
-  const handleOpenForm = (item: MenuItem | null = null) => {
+  const fetchMenuItems = async () => {
+    setIsLoading(true);
+    try {
+      const querySnapshot = await getDocs(collection(db, "menuItems"));
+      const menuItemsData = querySnapshot.docs.map(doc => ({ ...doc.data() as MenuItem, id: doc.id }));
+      setData(menuItemsData);
+    } catch (error) {
+      console.error("Error fetching menu items: ", error);
+      toast({ variant: "destructive", title: "Error", description: "Failed to fetch menu items." });
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchMenuItems();
+  }, []);
+
+  const handleOpenForm = (item: MenuItemWithId | null = null) => {
     setSelectedMenuItem(item)
     setFormOpen(true)
   }
@@ -29,7 +52,7 @@ export default function AdminMenuPage() {
     setFormOpen(false)
   }
 
-  const handleOpenDeleteAlert = (item: MenuItem) => {
+  const handleOpenDeleteAlert = (item: MenuItemWithId) => {
     setSelectedMenuItem(item)
     setDeleteAlertOpen(true)
   }
@@ -39,28 +62,49 @@ export default function AdminMenuPage() {
     setDeleteAlertOpen(false)
   }
 
-  const handleSubmit = (formData: Omit<MenuItem, 'id'>) => {
-    if (selectedMenuItem) {
-      setData(data.map(item => item.id === selectedMenuItem.id ? { ...item, ...formData } : item))
-      toast({ title: "Menu Item Updated", description: `${formData.name} has been updated.`})
-    } else {
-      const newItem = { ...formData, id: `menu-${Date.now()}` }
-      setData([...data, newItem])
-      toast({ title: "Menu Item Added", description: `${formData.name} has been added to the menu.`})
+  const handleSubmit = async (formData: Omit<MenuItem, 'id'>) => {
+    try {
+      if (selectedMenuItem) {
+        const itemDoc = doc(db, "menuItems", selectedMenuItem.id);
+        await updateDoc(itemDoc, formData);
+        toast({ title: "Menu Item Updated", description: `${formData.name} has been updated.`})
+      } else {
+        await addDoc(collection(db, "menuItems"), formData);
+        toast({ title: "Menu Item Added", description: `${formData.name} has been added to the menu.`})
+      }
+      fetchMenuItems();
+    } catch (error) {
+      console.error("Error saving menu item: ", error);
+      toast({ variant: "destructive", title: "Error", description: "Failed to save menu item." });
+    } finally {
+      handleCloseForm()
     }
-    handleCloseForm()
   }
 
-  const handleDelete = () => {
+  const handleDelete = async () => {
     if (!selectedMenuItem) return
-    setData(data.filter(item => item.id !== selectedMenuItem.id))
-    toast({ variant: "destructive", title: "Menu Item Deleted", description: `${selectedMenuItem.name} has been deleted.`})
-    handleCloseDeleteAlert()
+    try {
+      await deleteDoc(doc(db, "menuItems", selectedMenuItem.id));
+      toast({ variant: "destructive", title: "Menu Item Deleted", description: `${selectedMenuItem.name} has been deleted.`})
+      fetchMenuItems();
+    } catch (error) {
+      console.error("Error deleting menu item: ", error);
+      toast({ variant: "destructive", title: "Error", description: "Failed to delete menu item." });
+    } finally {
+      handleCloseDeleteAlert()
+    }
   }
 
-  const handleToggleAvailability = (itemToToggle: MenuItem) => {
-    setData(data.map(item => item.id === itemToToggle.id ? { ...item, soldOut: !item.soldOut } : item))
-    toast({ title: "Availability Updated", description: `${itemToToggle.name} is now ${!itemToToggle.soldOut ? 'available' : 'sold out'}.`})
+  const handleToggleAvailability = async (itemToToggle: MenuItemWithId) => {
+    try {
+      const itemDoc = doc(db, "menuItems", itemToToggle.id);
+      await updateDoc(itemDoc, { soldOut: !itemToToggle.soldOut });
+      toast({ title: "Availability Updated", description: `${itemToToggle.name} is now ${!itemToToggle.soldOut ? 'available' : 'sold out'}.`})
+      fetchMenuItems();
+    } catch (error) {
+      console.error("Error updating availability: ", error);
+      toast({ variant: "destructive", title: "Error", description: "Failed to update availability." });
+    }
   }
 
   return (
@@ -78,13 +122,19 @@ export default function AdminMenuPage() {
             Add New Item
           </Button>
         </div>
-        <DataTable 
-          columns={columns} 
-          data={data} 
-          onEdit={handleOpenForm} 
-          onDelete={handleOpenDeleteAlert}
-          onToggleAvailability={handleToggleAvailability}
-        />
+        {isLoading ? (
+           <div className="flex justify-center items-center h-64">
+            <Loader2 className="h-8 w-8 animate-spin text-primary" />
+          </div>
+        ) : (
+          <DataTable 
+            columns={columns} 
+            data={data} 
+            onEdit={handleOpenForm} 
+            onDelete={handleOpenDeleteAlert}
+            onToggleAvailability={handleToggleAvailability}
+          />
+        )}
       </div>
 
       <Dialog open={isFormOpen} onOpenChange={setFormOpen}>

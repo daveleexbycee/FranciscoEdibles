@@ -1,25 +1,49 @@
 
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { Button } from "@/components/ui/button"
-import { PlusCircle } from "lucide-react"
-import { Coupon, coupons as initialCoupons } from "@/lib/mock-data"
+import { Loader2, PlusCircle } from "lucide-react"
+import { Coupon } from "@/lib/mock-data"
 import { columns } from "./columns" 
 import { DataTable } from "./data-table" 
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import { CouponForm } from "@/components/admin/coupons/coupon-form"
 import { useToast } from "@/hooks/use-toast"
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog"
+import { collection, getDocs, addDoc, updateDoc, deleteDoc, doc } from "firebase/firestore"
+import { db } from "@/lib/firebase"
+
+type CouponWithId = Coupon & { id: string };
 
 export default function AdminCouponsPage() {
-  const [data, setData] = useState<Coupon[]>(initialCoupons)
+  const [data, setData] = useState<CouponWithId[]>([])
+  const [isLoading, setIsLoading] = useState(true)
   const [isFormOpen, setFormOpen] = useState(false)
   const [isDeleteAlertOpen, setDeleteAlertOpen] = useState(false)
-  const [selectedCoupon, setSelectedCoupon] = useState<Coupon | null>(null)
+  const [selectedCoupon, setSelectedCoupon] = useState<CouponWithId | null>(null)
   const { toast } = useToast()
 
-  const handleOpenForm = (coupon: Coupon | null = null) => {
+  const fetchCoupons = async () => {
+    setIsLoading(true);
+    try {
+      const querySnapshot = await getDocs(collection(db, "coupons"));
+      const couponsData = querySnapshot.docs.map(doc => ({ ...doc.data() as Coupon, id: doc.id }));
+      setData(couponsData);
+    } catch (error) {
+      console.error("Error fetching coupons: ", error);
+      toast({ variant: "destructive", title: "Error", description: "Failed to fetch coupons." });
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchCoupons();
+  }, []);
+
+
+  const handleOpenForm = (coupon: CouponWithId | null = null) => {
     setSelectedCoupon(coupon)
     setFormOpen(true)
   }
@@ -29,7 +53,7 @@ export default function AdminCouponsPage() {
     setFormOpen(false)
   }
 
-  const handleOpenDeleteAlert = (coupon: Coupon) => {
+  const handleOpenDeleteAlert = (coupon: CouponWithId) => {
     setSelectedCoupon(coupon)
     setDeleteAlertOpen(true)
   }
@@ -39,28 +63,49 @@ export default function AdminCouponsPage() {
     setDeleteAlertOpen(false)
   }
 
-  const handleSubmit = (formData: Omit<Coupon, 'id'>) => {
-    if (selectedCoupon) {
-      setData(data.map(c => c.id === selectedCoupon.id ? { ...c, ...formData } : c))
-      toast({ title: "Coupon Updated", description: `Coupon "${formData.code}" has been updated.`})
-    } else {
-      const newCoupon = { ...formData, id: `coupon-${Date.now()}` }
-      setData([...data, newCoupon])
-      toast({ title: "Coupon Added", description: `Coupon "${formData.code}" has been added.`})
+  const handleSubmit = async (formData: Omit<Coupon, 'id'>) => {
+    try {
+      if (selectedCoupon) {
+        const couponDoc = doc(db, "coupons", selectedCoupon.id);
+        await updateDoc(couponDoc, formData);
+        toast({ title: "Coupon Updated", description: `Coupon "${formData.code}" has been updated.`})
+      } else {
+        await addDoc(collection(db, "coupons"), formData);
+        toast({ title: "Coupon Added", description: `Coupon "${formData.code}" has been added.`})
+      }
+      fetchCoupons();
+    } catch (error) {
+      console.error("Error saving coupon: ", error);
+      toast({ variant: "destructive", title: "Error", description: "Failed to save coupon." });
+    } finally {
+      handleCloseForm();
     }
-    handleCloseForm()
   }
 
-  const handleDelete = () => {
+  const handleDelete = async () => {
     if (!selectedCoupon) return
-    setData(data.filter(c => c.id !== selectedCoupon.id))
-    toast({ variant: "destructive", title: "Coupon Deleted", description: `Coupon "${selectedCoupon.code}" has been deleted.`})
-    handleCloseDeleteAlert()
+    try {
+      await deleteDoc(doc(db, "coupons", selectedCoupon.id));
+      toast({ variant: "destructive", title: "Coupon Deleted", description: `Coupon "${selectedCoupon.code}" has been deleted.`})
+      fetchCoupons();
+    } catch (error) {
+      console.error("Error deleting coupon: ", error);
+      toast({ variant: "destructive", title: "Error", description: "Failed to delete coupon." });
+    } finally {
+      handleCloseDeleteAlert()
+    }
   }
 
-  const handleToggleStatus = (coupon: Coupon) => {
-    setData(data.map(c => c.id === coupon.id ? { ...c, isActive: !c.isActive } : c))
-    toast({ title: "Status Updated", description: `Coupon "${coupon.code}" status changed to ${!coupon.isActive ? 'Active' : 'Inactive'}.`})
+  const handleToggleStatus = async (coupon: CouponWithId) => {
+    try {
+      const couponDoc = doc(db, "coupons", coupon.id);
+      await updateDoc(couponDoc, { isActive: !coupon.isActive });
+      toast({ title: "Status Updated", description: `Coupon "${coupon.code}" status changed to ${!coupon.isActive ? 'Active' : 'Inactive'}.`})
+      fetchCoupons();
+    } catch (error) {
+       console.error("Error updating status: ", error);
+       toast({ variant: "destructive", title: "Error", description: "Failed to update coupon status." });
+    }
   }
 
   return (
@@ -78,13 +123,19 @@ export default function AdminCouponsPage() {
             Add New Coupon
           </Button>
         </div>
-        <DataTable 
-          columns={columns} 
-          data={data} 
-          onEdit={handleOpenForm} 
-          onDelete={handleOpenDeleteAlert}
-          onToggleStatus={handleToggleStatus}
-        />
+        {isLoading ? (
+           <div className="flex justify-center items-center h-64">
+            <Loader2 className="h-8 w-8 animate-spin text-primary" />
+          </div>
+        ) : (
+          <DataTable 
+            columns={columns} 
+            data={data} 
+            onEdit={handleOpenForm} 
+            onDelete={handleOpenDeleteAlert}
+            onToggleStatus={handleToggleStatus}
+          />
+        )}
       </div>
 
       <Dialog open={isFormOpen} onOpenChange={setFormOpen}>

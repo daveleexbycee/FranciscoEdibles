@@ -1,9 +1,9 @@
 
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { Button } from "@/components/ui/button"
-import { PlusCircle } from "lucide-react"
+import { Loader2, PlusCircle } from "lucide-react"
 import { Chef, chefs as initialChefs } from "@/lib/mock-data"
 import { columns } from "./columns" 
 import { DataTable } from "./data-table" 
@@ -11,15 +11,38 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { ChefForm } from "@/components/admin/chefs/chef-form"
 import { useToast } from "@/hooks/use-toast"
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog"
+import { collection, getDocs, addDoc, updateDoc, deleteDoc, doc } from "firebase/firestore"
+import { db } from "@/lib/firebase"
+
+type ChefWithId = Chef & { id: string };
 
 export default function AdminChefsPage() {
-  const [data, setData] = useState<Chef[]>(initialChefs)
+  const [data, setData] = useState<ChefWithId[]>([])
+  const [isLoading, setIsLoading] = useState(true)
   const [isFormOpen, setFormOpen] = useState(false)
   const [isDeleteAlertOpen, setDeleteAlertOpen] = useState(false)
-  const [selectedChef, setSelectedChef] = useState<Chef | null>(null)
+  const [selectedChef, setSelectedChef] = useState<ChefWithId | null>(null)
   const { toast } = useToast()
 
-  const handleOpenForm = (chef: Chef | null = null) => {
+  const fetchChefs = async () => {
+    setIsLoading(true);
+    try {
+      const querySnapshot = await getDocs(collection(db, "chefs"));
+      const chefsData = querySnapshot.docs.map(doc => ({ ...doc.data() as Chef, id: doc.id }));
+      setData(chefsData);
+    } catch (error) {
+      console.error("Error fetching chefs: ", error);
+      toast({ variant: "destructive", title: "Error", description: "Failed to fetch chefs from the database." });
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchChefs();
+  }, []);
+
+  const handleOpenForm = (chef: ChefWithId | null = null) => {
     setSelectedChef(chef)
     setFormOpen(true)
   }
@@ -29,7 +52,7 @@ export default function AdminChefsPage() {
     setFormOpen(false)
   }
 
-  const handleOpenDeleteAlert = (chef: Chef) => {
+  const handleOpenDeleteAlert = (chef: ChefWithId) => {
     setSelectedChef(chef)
     setDeleteAlertOpen(true)
   }
@@ -39,25 +62,39 @@ export default function AdminChefsPage() {
     setDeleteAlertOpen(false)
   }
 
-  const handleSubmit = (formData: Omit<Chef, 'id'>) => {
-    if (selectedChef) {
-      // Editing existing chef
-      setData(data.map(chef => chef.id === selectedChef.id ? { ...chef, ...formData } : chef))
-      toast({ title: "Chef Updated", description: `${formData.name} has been updated.`})
-    } else {
-      // Adding new chef
-      const newChef = { ...formData, id: `chef-${Date.now()}` }
-      setData([...data, newChef])
-      toast({ title: "Chef Added", description: `${formData.name} has been added.`})
+  const handleSubmit = async (formData: Omit<Chef, 'id'>) => {
+    try {
+      if (selectedChef) {
+        // Editing existing chef
+        const chefDoc = doc(db, "chefs", selectedChef.id);
+        await updateDoc(chefDoc, formData);
+        toast({ title: "Chef Updated", description: `${formData.name} has been updated.`});
+      } else {
+        // Adding new chef
+        await addDoc(collection(db, "chefs"), formData);
+        toast({ title: "Chef Added", description: `${formData.name} has been added.`});
+      }
+      fetchChefs(); // Refresh data
+    } catch (error) {
+       console.error("Error saving chef: ", error);
+       toast({ variant: "destructive", title: "Error", description: "Failed to save chef." });
+    } finally {
+      handleCloseForm()
     }
-    handleCloseForm()
   }
 
-  const handleDelete = () => {
+  const handleDelete = async () => {
     if (!selectedChef) return
-    setData(data.filter(chef => chef.id !== selectedChef.id))
-    toast({ variant: "destructive", title: "Chef Deleted", description: `${selectedChef.name} has been deleted.`})
-    handleCloseDeleteAlert()
+    try {
+      await deleteDoc(doc(db, "chefs", selectedChef.id));
+      toast({ variant: "destructive", title: "Chef Deleted", description: `${selectedChef.name} has been deleted.`});
+      fetchChefs(); // Refresh data
+    } catch (error) {
+       console.error("Error deleting chef: ", error);
+       toast({ variant: "destructive", title: "Error", description: "Failed to delete chef." });
+    } finally {
+      handleCloseDeleteAlert()
+    }
   }
 
   return (
@@ -75,7 +112,13 @@ export default function AdminChefsPage() {
             Add New Chef
           </Button>
         </div>
-        <DataTable columns={columns} data={data} onEdit={handleOpenForm} onDelete={handleOpenDeleteAlert} />
+        {isLoading ? (
+          <div className="flex justify-center items-center h-64">
+            <Loader2 className="h-8 w-8 animate-spin text-primary" />
+          </div>
+        ) : (
+          <DataTable columns={columns} data={data} onEdit={handleOpenForm} onDelete={handleOpenDeleteAlert} />
+        )}
       </div>
 
       <Dialog open={isFormOpen} onOpenChange={setFormOpen}>
