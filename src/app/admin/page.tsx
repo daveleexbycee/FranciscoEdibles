@@ -9,45 +9,55 @@ import RecentOrders from "@/components/admin/dashboard/recent-orders";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { collection, getDocs } from "firebase/firestore";
 import { db } from "@/lib/firebase";
-import { Loader2 } from "lucide-react";
+import { Loader2, RotateCw } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 type OrderWithId = Order & { id: string };
 
 export default function AdminDashboardPage() {
   const [orders, setOrders] = useState<OrderWithId[]>([]);
+  const [originalOrders, setOriginalOrders] = useState<OrderWithId[]>([]);
   const [chefs, setChefs] = useState<Chef[]>([]);
   const [menuItems, setMenuItems] = useState<MenuItem[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
+  const fetchData = async () => {
+    setIsLoading(true);
+    try {
+      const [ordersSnap, chefsSnap, menuItemsSnap] = await Promise.all([
+        getDocs(collection(db, "orders")),
+        getDocs(collection(db, "chefs")),
+        getDocs(collection(db, "menuItems")),
+      ]);
+
+      const ordersData = ordersSnap.docs.map(doc => ({ ...doc.data() as Order, id: doc.id }));
+      setOrders(ordersData);
+      setOriginalOrders(ordersData); // Keep a copy of the original data
+
+      const chefsData = chefsSnap.docs.map(doc => doc.data() as Chef);
+      setChefs(chefsData);
+
+      const menuItemsData = menuItemsSnap.docs.map(doc => doc.data() as MenuItem);
+      setMenuItems(menuItemsData);
+
+    } catch (error) {
+      console.error("Error fetching dashboard data: ", error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   useEffect(() => {
-    const fetchData = async () => {
-      setIsLoading(true);
-      try {
-        const [ordersSnap, chefsSnap, menuItemsSnap] = await Promise.all([
-          getDocs(collection(db, "orders")),
-          getDocs(collection(db, "chefs")),
-          getDocs(collection(db, "menuItems")),
-        ]);
-
-        const ordersData = ordersSnap.docs.map(doc => ({ ...doc.data() as Order, id: doc.id }));
-        setOrders(ordersData);
-
-        const chefsData = chefsSnap.docs.map(doc => doc.data() as Chef);
-        setChefs(chefsData);
-
-        const menuItemsData = menuItemsSnap.docs.map(doc => doc.data() as MenuItem);
-        setMenuItems(menuItemsData);
-
-      } catch (error) {
-        console.error("Error fetching dashboard data: ", error);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
     fetchData();
   }, []);
+  
+  const handleReset = () => {
+    setOrders([]);
+  }
 
+  const handleReload = () => {
+    setOrders(originalOrders);
+  }
 
   const totalRevenue = orders
     .filter(order => order.status === 'Delivered')
@@ -65,12 +75,18 @@ export default function AdminDashboardPage() {
 
   return (
     <div className="space-y-8">
-       <div>
-        <h1 className="text-2xl font-bold tracking-tight">Dashboard</h1>
-        <p className="text-muted-foreground">
-          An overview of your restaurant's performance.
-        </p>
-      </div>
+       <div className="flex items-center justify-between">
+          <div>
+            <h1 className="text-2xl font-bold tracking-tight">Dashboard</h1>
+            <p className="text-muted-foreground">
+              An overview of your restaurant's performance.
+            </p>
+          </div>
+          <div className="flex items-center gap-2">
+            <Button variant="outline" onClick={handleReset}>Reset Data</Button>
+            <Button onClick={handleReload}><RotateCw className="mr-2" /> Reload Data</Button>
+          </div>
+        </div>
       
       <OverviewCards 
         totalRevenue={totalRevenue}
