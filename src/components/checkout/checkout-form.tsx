@@ -10,9 +10,8 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { MapPin, LocateFixed, CreditCard, Truck } from 'lucide-react';
+import { MapPin, LocateFixed, CreditCard, Truck, Loader2 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
-import Image from 'next/image';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Label } from '@/components/ui/label';
 import { useCart } from '@/hooks/use-cart';
@@ -20,7 +19,18 @@ import { db, auth } from '@/lib/firebase';
 import { addDoc, collection } from 'firebase/firestore';
 import { useRouter } from 'next/navigation';
 import { AlertDialog, AlertDialogAction, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '../ui/alert-dialog';
+import { GoogleMap, useJsApiLoader, Marker } from '@react-google-maps/api';
 
+const containerStyle = {
+  width: '100%',
+  height: '256px', // h-64
+  borderRadius: '0.375rem', // rounded-md
+};
+
+const defaultCenter = {
+  lat: 6.5244,
+  lng: 3.3792
+};
 
 const checkoutSchema = z.object({
   fullName: z.string().min(2, { message: 'Full name must be at least 2 characters.' }),
@@ -42,6 +52,12 @@ export default function CheckoutForm() {
   const [isSubmitting, setIsSubmitting] = React.useState(false);
   const [isLocating, setIsLocating] = React.useState(false);
   const [isAlertOpen, setAlertOpen] = React.useState(false);
+  const [mapCenter, setMapCenter] = React.useState(defaultCenter);
+  const [markerPosition, setMarkerPosition] = React.useState(defaultCenter);
+
+  const { isLoaded, loadError } = useJsApiLoader({
+    googleMapsApiKey: process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY || "",
+  });
 
   const form = useForm<CheckoutFormValues>({
     resolver: zodResolver(checkoutSchema),
@@ -56,16 +72,44 @@ export default function CheckoutForm() {
   });
 
   const paymentMethod = form.watch('paymentMethod');
+  
+  const getAddressFromCoordinates = async (lat: number, lng: number) => {
+    try {
+      // Note: This requires the Geocoding API to be enabled in your Google Cloud project.
+      const response = await fetch(`https://maps.googleapis.com/maps/api/geocode/json?latlng=${lat},${lng}&key=${process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY}`);
+      const data = await response.json();
+      if (data.results && data.results[0]) {
+        const address = data.results[0].formatted_address;
+        const addressComponents = data.results[0].address_components;
+        
+        const cityComponent = addressComponents.find((c: any) => c.types.includes('locality'));
+        const stateComponent = addressComponents.find((c: any) => c.types.includes('administrative_area_level_1'));
+        
+        form.setValue('address', address);
+        if (cityComponent) form.setValue('city', cityComponent.long_name);
+        if (stateComponent) form.setValue('state', stateComponent.long_name);
+      } else {
+        form.setValue('address', `Lat: ${lat.toFixed(4)}, Lng: ${lng.toFixed(4)}`);
+      }
+    } catch (error) {
+      console.error("Error fetching address:", error);
+      form.setValue('address', `Lat: ${lat.toFixed(4)}, Lng: ${lng.toFixed(4)}`);
+    }
+  };
+
 
   const handleUseCurrentLocation = () => {
     setIsLocating(true);
     navigator.geolocation.getCurrentPosition(
       (position) => {
         const { latitude, longitude } = position.coords;
-        form.setValue('address', `Lat: ${latitude.toFixed(4)}, Lng: ${longitude.toFixed(4)}`);
+        const newPos = { lat: latitude, lng: longitude };
+        setMapCenter(newPos);
+        setMarkerPosition(newPos);
+        getAddressFromCoordinates(latitude, longitude);
         toast({
           title: 'Location Found',
-          description: 'Your coordinates have been filled in the address field.',
+          description: 'Your location has been updated on the map and in the form.',
         });
         setIsLocating(false);
       },
@@ -144,6 +188,50 @@ export default function CheckoutForm() {
     }
   }
 
+  const handleMapClick = (e: google.maps.MapMouseEvent) => {
+    if (e.latLng) {
+      const newPos = { lat: e.latLng.lat(), lng: e.latLng.lng() };
+      setMarkerPosition(newPos);
+      getAddressFromCoordinates(newPos.lat, newPos.lng);
+    }
+  };
+
+  const renderMap = () => {
+    if (loadError) {
+      return (
+         <div className="w-full h-64 bg-destructive/10 rounded-md flex items-center justify-center text-destructive flex-col p-4 text-center">
+            <MapPin className="h-10 w-10 mb-2" />
+            <p className="font-semibold">Error loading map</p>
+            <p className="text-sm">Please check your API key and network connection.</p>
+        </div>
+      )
+    }
+
+    if (!isLoaded) {
+      return (
+        <div className="w-full h-64 bg-muted rounded-md flex items-center justify-center text-muted-foreground flex-col">
+          <Loader2 className="h-8 w-8 animate-spin mb-2" />
+          <p>Loading Map...</p>
+        </div>
+      )
+    }
+
+    return (
+      <GoogleMap
+        mapContainerStyle={containerStyle}
+        center={mapCenter}
+        zoom={15}
+        onClick={handleMapClick}
+        options={{
+          disableDefaultUI: true,
+          zoomControl: true,
+        }}
+      >
+        <Marker position={markerPosition} />
+      </GoogleMap>
+    );
+  }
+
   return (
     <>
       <Card>
@@ -188,9 +276,9 @@ export default function CheckoutForm() {
               <div className="space-y-2">
                   <div className="flex justify-between items-center">
                       <FormLabel htmlFor="address">Delivery Address</FormLabel>
-                      <Button type="button" variant="outline" size="sm" onClick={handleUseCurrentLocation} disabled={isLocating || isSubmitting}>
+                      <Button type="button" variant="outline" size="sm" onClick={handleUseCurrentLocation} disabled={isLocating || isSubmitting || !isLoaded}>
                         {isLocating ? (
-                          <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-primary" />
+                           <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                         ) : (
                           <LocateFixed className="mr-2 h-4 w-4" />
                         )}
@@ -246,19 +334,12 @@ export default function CheckoutForm() {
                   </div>
                   <div className="relative flex justify-center text-xs uppercase">
                       <span className="bg-card px-2 text-muted-foreground">
-                      Or select on map
+                      Click map to set location
                       </span>
                   </div>
               </div>
 
-              <div className="w-full h-64 bg-muted rounded-md flex items-center justify-center text-muted-foreground relative overflow-hidden">
-                  <Image src="https://placehold.co/800x400.png" alt="Map placeholder" fill className="object-cover" data-ai-hint="street map" />
-                   <div className="absolute inset-0 bg-black/30 flex items-center justify-center flex-col text-center p-4">
-                      <MapPin className="h-10 w-10 text-white mb-2" />
-                      <p className="text-white font-semibold">Google Maps integration coming soon!</p>
-                      <p className="text-sm text-white/80">For now, please type your address above.</p>
-                  </div>
-              </div>
+              {renderMap()}
 
               <div className="relative my-6">
                 <div aria-hidden="true" className="absolute inset-0 flex items-center">
