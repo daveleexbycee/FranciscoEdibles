@@ -6,6 +6,7 @@ export default function Home() {
   return (
     <>
       <Hero />
+      <FeaturedMenu />
       <section className="py-12 flex justify-center bg-background">
         <div className="border p-4 rounded-lg shadow-sm bg-card">
             <Script id="adsterra-config-home" strategy="lazyOnload">
@@ -26,7 +27,6 @@ export default function Home() {
             />
         </div>
       </section>
-      <FeaturedMenu />
     </>
   );
 }
