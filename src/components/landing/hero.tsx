@@ -12,7 +12,6 @@ import {
   CarouselNext,
   CarouselPrevious,
 } from "@/components/ui/carousel";
-import { useAuth } from '@/context/auth-context';
 import InstallPWA from '../shared/install-pwa';
 
 const carouselImages = [
@@ -23,7 +22,6 @@ const carouselImages = [
 ];
 
 export default function Hero() {
-  const { user, loading } = useAuth();
   
   return (
     <section className="w-full py-16 sm:py-24 md:py-32 bg-secondary/30">
@@ -65,9 +63,7 @@ export default function Hero() {
                   <ArrowRight className="ml-2 h-5 w-5" />
                 </Link>
               </Button>
-              {!loading && !user && (
-                <InstallPWA displayType="button" />
-              )}
+              <InstallPWA displayType="button" />
             </div>
           </div>
         </div>
