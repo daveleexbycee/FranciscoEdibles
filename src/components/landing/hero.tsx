@@ -1,3 +1,6 @@
+
+"use client";
+
 import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import { ArrowRight } from 'lucide-react';
@@ -9,6 +12,8 @@ import {
   CarouselNext,
   CarouselPrevious,
 } from "@/components/ui/carousel";
+import { useAuth } from '@/context/auth-context';
+import InstallPWA from '../shared/install-pwa';
 
 const carouselImages = [
   { src: 'https://images.unsplash.com/photo-1604329760661-e71dc83f8f26?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxuaWdlcmlhbiUyMGZvb2RzfGVufDB8fHx8MTc1MTk3MjE3Mnww&ixlib=rb-4.1.0&q=80&w=1080', alt: 'A spread of delicious Nigerian dishes', hint: 'nigerian food' },
@@ -18,6 +23,8 @@ const carouselImages = [
 ];
 
 export default function Hero() {
+  const { user, loading } = useAuth();
+  
   return (
     <section className="w-full py-16 sm:py-24 md:py-32 bg-secondary/30">
       <div className="container px-4 md:px-6">
@@ -58,11 +65,9 @@ export default function Hero() {
                   <ArrowRight className="ml-2 h-5 w-5" />
                 </Link>
               </Button>
-              <Button size="lg" variant="outline" asChild>
-                <Link href="#featured">
-                  View Specials
-                </Link>
-              </Button>
+              {!loading && !user && (
+                <InstallPWA displayType="button" />
+              )}
             </div>
           </div>
         </div>
