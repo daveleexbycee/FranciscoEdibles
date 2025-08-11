@@ -144,7 +144,7 @@ export default function AdminChefsPage() {
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel onClick={handleCloseDeleteAlert}>Cancel</AlertDialogCancel>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
             <AlertDialogAction onClick={handleDelete}>Continue</AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>

@@ -159,7 +159,7 @@ export default function AdminMenuPage() {
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel onClick={handleCloseDeleteAlert}>Cancel</AlertDialogCancel>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
             <AlertDialogAction onClick={handleDelete}>Continue</AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
