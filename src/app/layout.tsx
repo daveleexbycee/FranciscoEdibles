@@ -1,3 +1,4 @@
+
 import type { Metadata } from 'next';
 import './globals.css';
 import { cn } from '@/lib/utils';
@@ -27,7 +28,7 @@ export default function RootLayout({
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=PT+Sans:wght@400;700&display=swap" rel="stylesheet" />
         <link rel="apple-touch-icon" href="/icons/icon-192x192.png"></link>
-        <meta name="theme-color" content="#D4A373" />
+        <meta name="theme-color" content="#A0522D" />
       </head>
       <body className={cn("min-h-screen bg-background font-body antialiased")}>
         <ThemeProvider
