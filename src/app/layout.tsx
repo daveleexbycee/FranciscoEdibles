@@ -7,10 +7,12 @@ import Header from '@/components/layout/header';
 import Footer from '@/components/layout/footer';
 import { ThemeProvider } from '@/components/theme-provider';
 import { AuthProvider } from '@/context/auth-context';
+import Script from 'next/script';
 
 export const metadata: Metadata = {
   title: 'Francisco Edibles',
   description: 'Delicious meals, delivered to your doorstep.',
+  manifest: '/manifest.json'
 };
 
 export default function RootLayout({
@@ -24,6 +26,8 @@ export default function RootLayout({
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=PT+Sans:wght@400;700&display=swap" rel="stylesheet" />
+        <link rel="apple-touch-icon" href="/icons/icon-192x192.png"></link>
+        <meta name="theme-color" content="#D4A373" />
       </head>
       <body className={cn("min-h-screen bg-background font-body antialiased")}>
         <ThemeProvider
@@ -43,6 +47,19 @@ export default function RootLayout({
             </CartProvider>
           </AuthProvider>
         </ThemeProvider>
+         <Script id="service-worker-installer" strategy="lazyOnload">
+          {`
+            if ('serviceWorker' in navigator) {
+              window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/sw.js').then(registration => {
+                  console.log('SW registered: ', registration);
+                }).catch(registrationError => {
+                  console.log('SW registration failed: ', registrationError);
+                });
+              });
+            }
+          `}
+        </Script>
       </body>
     </html>
   );
