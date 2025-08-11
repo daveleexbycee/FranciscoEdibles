@@ -1,7 +1,11 @@
 {
   "name": "Francisco Edibles",
-  "short_name": "Francisco",
+  "short_name": "F-Edibles",
   "description": "Delicious meals, delivered to your doorstep.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#A0522D",
+  "theme_color": "#A0522D",
   "icons": [
     {
       "src": "/icons/icon-192x192.png",
@@ -13,10 +17,5 @@
       "sizes": "512x512",
       "type": "image/png"
     }
-  ],
-  "theme_color": "#A0522D",
-  "background_color": "#F5DEB3",
-  "start_url": "/",
-  "display": "standalone",
-  "orientation": "portrait"
+  ]
 }
