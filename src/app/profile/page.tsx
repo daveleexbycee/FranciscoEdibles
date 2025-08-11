@@ -1,18 +1,54 @@
+
 "use client"
 
 import { useAuth } from "@/context/auth-context"
 import { useRouter } from "next/navigation"
-import { useEffect } from "react"
+import { useEffect, useState } from "react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { signOut } from "firebase/auth"
 import { auth } from "@/lib/firebase"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { Loader2 } from "lucide-react"
+import { Download, Loader2 } from "lucide-react"
+
+// Define the type for the beforeinstallprompt event
+interface BeforeInstallPromptEvent extends Event {
+  readonly platforms: Array<string>;
+  readonly userChoice: Promise<{
+    outcome: 'accepted' | 'dismissed',
+    platform: string
+  }>;
+  prompt(): Promise<void>;
+}
+
 
 export default function ProfilePage() {
   const { user, loading } = useAuth()
   const router = useRouter()
+  const [deferredPrompt, setDeferredPrompt] = useState<BeforeInstallPromptEvent | null>(null);
+  const [isAppInstalled, setIsAppInstalled] = useState(false);
+
+
+  useEffect(() => {
+    // Check if the app is already installed
+    if (window.matchMedia('(display-mode: standalone)').matches) {
+      setIsAppInstalled(true);
+    }
+
+    const handleBeforeInstallPrompt = (e: Event) => {
+      // Prevent the mini-infobar from appearing on mobile
+      e.preventDefault();
+      // Stash the event so it can be triggered later.
+      setDeferredPrompt(e as BeforeInstallPromptEvent);
+    };
+
+    window.addEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
+
+    return () => {
+      window.removeEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
+    };
+  }, []);
+
 
   useEffect(() => {
     if (!loading && !user) {
@@ -29,6 +65,22 @@ export default function ProfilePage() {
     if (!name) return 'U';
     return name.split(' ').map(n => n[0]).join('').toUpperCase();
   }
+
+  const handleDownloadClick = async () => {
+    if (!deferredPrompt) {
+      return;
+    }
+    // Show the install prompt
+    deferredPrompt.prompt();
+    // Wait for the user to respond to the prompt
+    const { outcome } = await deferredPrompt.userChoice;
+    // We've used the prompt, and can't use it again, so clear it
+    setDeferredPrompt(null);
+    if (outcome === 'accepted') {
+      setIsAppInstalled(true);
+    }
+  };
+
 
   if (loading || !user) {
     return (
@@ -56,8 +108,22 @@ export default function ProfilePage() {
               </div>
            </div>
            
-           <div className="space-y-2">
+           <div className="space-y-4">
               <h3 className="font-semibold">Account Details</h3>
+               {deferredPrompt && !isAppInstalled && (
+                <Card className="p-4 bg-muted/50">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="font-medium">Get the App</p>
+                      <p className="text-sm text-muted-foreground">Install Francisco Edibles on your home screen.</p>
+                    </div>
+                    <Button onClick={handleDownloadClick}>
+                      <Download className="mr-2 h-4 w-4" />
+                      Install
+                    </Button>
+                  </div>
+                </Card>
+              )}
               <p className="text-sm text-muted-foreground">More profile management features coming soon!</p>
            </div>
            
