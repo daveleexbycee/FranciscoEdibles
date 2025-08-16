@@ -1,3 +1,3 @@
 # Francisco Edibles
 
-your fsure plug for delicious food
+your sure plug for delicious food
